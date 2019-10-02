@@ -20,10 +20,6 @@ export default function NoticeScreen() {
 	);
 }
 
-NoticeScreen.navigationOptions = {
-	header: null
-};
-
 const styles = StyleSheet.create({
 	container: {
 		justifyContent: "center",

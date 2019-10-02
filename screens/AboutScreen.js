@@ -15,14 +15,16 @@ import { MonoText } from "../components/StyledText";
 export default function AboutScreen() {
 	return (
 		<View style={styles.container}>
-			<Text style={styles.text}>AboutScreen</Text>
+			<Image
+				style={styles.logo}
+				source={require("../assets/images/Logo/logo.png")}
+			></Image>
+			<View>
+				<Text style={styles.text}>AboutScreen</Text>
+			</View>
 		</View>
 	);
 }
-
-AboutScreen.navigationOptions = {
-	header: null
-};
 
 const styles = StyleSheet.create({
 	container: {
@@ -33,5 +35,9 @@ const styles = StyleSheet.create({
 	},
 	text: {
 		color: "#fff"
+	},
+	logo: {
+		height: 150,
+		width: 240
 	}
 });
