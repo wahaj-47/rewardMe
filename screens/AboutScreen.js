@@ -14,8 +14,8 @@ import { MonoText } from "../components/StyledText";
 
 export default function AboutScreen() {
 	return (
-		<View>
-			<Text style={styles.container}>AboutScreen</Text>
+		<View style={styles.container}>
+			<Text style={styles.text}>AboutScreen</Text>
 		</View>
 	);
 }
@@ -23,3 +23,15 @@ export default function AboutScreen() {
 AboutScreen.navigationOptions = {
 	header: null
 };
+
+const styles = StyleSheet.create({
+	container: {
+		justifyContent: "center",
+		alignItems: "center",
+		flex: 1,
+		backgroundColor: "#000"
+	},
+	text: {
+		color: "#fff"
+	}
+});

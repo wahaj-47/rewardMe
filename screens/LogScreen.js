@@ -14,8 +14,8 @@ import { MonoText } from "../components/StyledText";
 
 export default function LogScreen() {
 	return (
-		<View>
-			<Text style={styles.container}>LogScreen</Text>
+		<View style={styles.container}>
+			<Text style={styles.text}>LogScreen</Text>
 		</View>
 	);
 }
@@ -23,3 +23,15 @@ export default function LogScreen() {
 LogScreen.navigationOptions = {
 	header: null
 };
+
+const styles = StyleSheet.create({
+	container: {
+		justifyContent: "center",
+		alignItems: "center",
+		flex: 1,
+		backgroundColor: "#000"
+	},
+	text: {
+		color: "#fff"
+	}
+});

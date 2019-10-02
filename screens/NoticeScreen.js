@@ -14,8 +14,8 @@ import { MonoText } from "../components/StyledText";
 
 export default function NoticeScreen() {
 	return (
-		<View>
-			<Text style={styles.container}>NoticeScreen</Text>
+		<View style={styles.container}>
+			<Text style={styles.text}>NoticeScreen</Text>
 		</View>
 	);
 }
@@ -23,3 +23,15 @@ export default function NoticeScreen() {
 NoticeScreen.navigationOptions = {
 	header: null
 };
+
+const styles = StyleSheet.create({
+	container: {
+		justifyContent: "center",
+		alignItems: "center",
+		flex: 1,
+		backgroundColor: "#000"
+	},
+	text: {
+		color: "#fff"
+	}
+});

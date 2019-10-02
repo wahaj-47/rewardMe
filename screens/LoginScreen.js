@@ -32,6 +32,13 @@ export default function LoginScreen(props) {
 			>
 				<Text style={styles.text}>Forgot Password</Text>
 			</TouchableOpacity>
+			<TouchableOpacity
+				onPress={() => {
+					props.navigation.navigate("Main");
+				}}
+			>
+				<Text style={styles.text}>Home</Text>
+			</TouchableOpacity>
 		</View>
 	);
 }

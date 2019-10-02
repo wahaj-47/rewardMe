@@ -13,21 +13,26 @@ import {
 import { MonoText } from "../components/StyledText";
 
 export default function HomeScreen() {
+	console.log("HomeScreen");
 	return (
-		<View>
-			<Text style={styles.container}>HomeScreen</Text>
+		<View style={styles.container}>
+			<Text style={styles.text}>HomeScreen</Text>
 		</View>
 	);
 }
 
-HomeScreen.navigationOptions = {
-	header: null
-};
+HomeScreen.navigationOptions = {};
 
 const styles = StyleSheet.create({
 	container: {
+		justifyContent: "center",
+		alignItems: "center",
 		flex: 1,
-		backgroundColor: "#fff"
+		backgroundColor: "#000"
+	},
+
+	text: {
+		color: "#fff"
 	},
 	developmentModeText: {
 		marginBottom: 20,

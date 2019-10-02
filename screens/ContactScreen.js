@@ -14,8 +14,8 @@ import { MonoText } from "../components/StyledText";
 
 export default function ContactScreen() {
 	return (
-		<View>
-			<Text style={styles.container}>ContactScreen</Text>
+		<View style={styles.container}>
+			<Text style={styles.text}>ContactScreen</Text>
 		</View>
 	);
 }
@@ -24,4 +24,14 @@ ContactScreen.navigationOptions = {
 	header: null
 };
 
-
+const styles = StyleSheet.create({
+	container: {
+		justifyContent: "center",
+		alignItems: "center",
+		flex: 1,
+		backgroundColor: "#000"
+	},
+	text: {
+		color: "#fff"
+	}
+});
