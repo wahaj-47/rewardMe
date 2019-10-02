@@ -11,6 +11,7 @@ import {
 } from "react-native";
 
 import { MonoText } from "../components/StyledText";
+import { Linking } from "expo";
 
 export default function AboutScreen() {
 	return (
@@ -19,8 +20,18 @@ export default function AboutScreen() {
 				style={styles.logo}
 				source={require("../assets/images/Logo/logo.png")}
 			></Image>
-			<View>
-				<Text style={styles.text}>AboutScreen</Text>
+			<View style={{ marginTop: 70 }}>
+				<Text style={styles.text}>
+					Visit our{" "}
+					<Text
+						onPress={() =>
+							Linking.openURL("http://mercedeshairdressing.com.au")
+						}
+						style={{ color: "steelblue" }}
+					>
+						Website
+					</Text>
+				</Text>
 			</View>
 		</View>
 	);
