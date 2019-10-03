@@ -62,7 +62,7 @@ export default class LoginScreen extends React.Component {
 					<TouchableOpacity
 						style={styles.loginButton}
 						onPress={() => {
-							this.props.navigation.navigate("Signup");
+							this.props.navigation.navigate("Main");
 							console.log("login button pressed");
 						}}
 					>
@@ -72,7 +72,7 @@ export default class LoginScreen extends React.Component {
 
 				<TouchableOpacity
 					onPress={() => {
-						this.props.navigation.navigate("Main");
+						this.props.navigation.navigate("Signup");
 						console.log("signup button is pressed");
 					}}
 				>
