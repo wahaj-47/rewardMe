@@ -15,20 +15,30 @@ import { MonoText } from "../components/StyledText";
 export default function HomeScreen() {
 	return (
 		<View style={styles.container}>
-			<Text style={styles.text}>HomeScreen</Text>
+			<View>
+				<Image source={require("../assets/images/QR.png")}></Image>
+			</View>
+			<TouchableOpacity
+				style={{
+					backgroundColor: "#1f1f1f",
+					flexDirection: "row",
+					alignItems: "center",
+					borderRadius: 25,
+					paddingVertical: 5,
+					paddingHorizontal: 20
+				}}
+			>
+				<Image
+					source={require("../assets/images/camera.png")}
+					style={{ height: 30, width: 30 }}
+				></Image>
+				<Text style={[styles.text, { marginLeft: 5, fontWeight: "700" }]}>
+					Scan
+				</Text>
+			</TouchableOpacity>
 		</View>
 	);
 }
-
-HomeScreen.navigationOptions = ({ navigation }) => {
-	return {
-		headerLeft: (
-			<TouchableOpacity onPress={() => navigation.openDrawer()}>
-				<Image source={require("../assets/images/menu.png")}></Image>
-			</TouchableOpacity>
-		)
-	};
-};
 
 const styles = StyleSheet.create({
 	container: {

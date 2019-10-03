@@ -2,7 +2,7 @@ import React from "react";
 import { createAppContainer, createSwitchNavigator } from "react-navigation";
 
 import AuthStack from "./AuthStackNavigator";
-import MainDrawerNavigator from "./MainDrawerNavigator";
+import ContainerStackNavigator from "./MainNavigator";
 
 export default createAppContainer(
 	createSwitchNavigator(
@@ -10,7 +10,7 @@ export default createAppContainer(
 			// You could add another route here for authentication.
 			// Read more at https://reactnavigation.org/docs/en/auth-flow.html
 			Auth: AuthStack,
-			Main: MainDrawerNavigator
+			Main: ContainerStackNavigator
 		},
 		{
 			initialRouteName: "Auth",

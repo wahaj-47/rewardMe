@@ -14,30 +14,33 @@ import { MonoText } from "../components/StyledText";
 
 export default function NoticeScreen() {
 	return (
-		<View style={styles.container}>
-			<Text style={styles.text}>NoticeScreen</Text>
-		</View>
+		<ScrollView style={styles.container}>
+			<View
+				style={{
+					flexDirection: "row",
+					alignItems: "center",
+					paddingLeft: 5,
+					paddingVertical: 10,
+					borderTopColor: "#fff",
+					borderTopWidth: StyleSheet.hairlineWidth,
+					borderBottomColor: "#fff",
+					borderBottomWidth: StyleSheet.hairlineWidth
+				}}
+			>
+				<Image source={require("../assets/images/notice.png")}></Image>
+				<Text style={styles.text}>Notice Title</Text>
+			</View>
+		</ScrollView>
 	);
 }
 
-NoticeScreen.navigationOptions = ({ navigation }) => {
-	return {
-		headerLeft: (
-			<TouchableOpacity onPress={() => navigation.openDrawer()}>
-				<Image source={require("../assets/images/menu.png")}></Image>
-			</TouchableOpacity>
-		)
-	};
-};
-
 const styles = StyleSheet.create({
 	container: {
-		justifyContent: "center",
-		alignItems: "center",
 		flex: 1,
 		backgroundColor: "#000"
 	},
 	text: {
-		color: "#fff"
+		color: "#fff",
+		marginLeft: 10
 	}
 });
