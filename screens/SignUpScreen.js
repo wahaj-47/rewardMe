@@ -12,6 +12,10 @@ import {
 
 import { MonoText } from "../components/StyledText";
 
+
+
+
+
 export default function SignUpScreen() {
 	return (
 		<View style={styles.container}>
