@@ -13,7 +13,6 @@ import {
 import { MonoText } from "../components/StyledText";
 
 export default function HomeScreen() {
-	console.log("HomeScreen");
 	return (
 		<View style={styles.container}>
 			<Text style={styles.text}>HomeScreen</Text>
@@ -21,7 +20,15 @@ export default function HomeScreen() {
 	);
 }
 
-HomeScreen.navigationOptions = {};
+HomeScreen.navigationOptions = ({ navigation }) => {
+	return {
+		headerLeft: (
+			<TouchableOpacity onPress={() => navigation.openDrawer()}>
+				<Image source={require("../assets/images/menu.png")}></Image>
+			</TouchableOpacity>
+		)
+	};
+};
 
 const styles = StyleSheet.create({
 	container: {

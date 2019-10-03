@@ -1,4 +1,5 @@
 import React from "react";
+import { Image } from "react-native";
 import { createDrawerNavigator, createStackNavigator } from "react-navigation";
 
 import HomeScreen from "../screens/HomeScreen";
@@ -7,16 +8,19 @@ import NoticeScreen from "../screens/NoticeScreen";
 import LogScreen from "../screens/LogScreen";
 import ContactUsScreen from "../screens/ContactScreen";
 
-const HomeStack = createStackNavigator({
-	Home: {
-		screen: HomeScreen,
-		navigationOptions: {
-			title: "Home",
-			headerTransparent: true,
-			headerTintColor: "#fff"
+const HomeStack = createStackNavigator(
+	{
+		Home: {
+			screen: HomeScreen,
+			navigationOptions: {
+				title: "Home",
+				headerTransparent: true,
+				headerTintColor: "#fff"
+			}
 		}
-	}
-});
+	},
+	{ headerLayoutPreset: "center" }
+);
 
 const AboutStack = createStackNavigator({
 	About: {
@@ -68,7 +72,7 @@ const MainDrawerNavigator = createDrawerNavigator(
 		About: AboutStack,
 		Notice: NoticeStack,
 		Log: LogStack,
-		ContactUs: ContactUsStack
+		"Contact Us": ContactUsStack
 	},
 	{
 		initialRouteName: "Home"

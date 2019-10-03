@@ -20,6 +20,16 @@ export default function NoticeScreen() {
 	);
 }
 
+NoticeScreen.navigationOptions = ({ navigation }) => {
+	return {
+		headerLeft: (
+			<TouchableOpacity onPress={() => navigation.openDrawer()}>
+				<Image source={require("../assets/images/menu.png")}></Image>
+			</TouchableOpacity>
+		)
+	};
+};
+
 const styles = StyleSheet.create({
 	container: {
 		justifyContent: "center",

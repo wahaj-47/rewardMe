@@ -37,6 +37,19 @@ export default function AboutScreen() {
 	);
 }
 
+AboutScreen.navigationOptions = ({ navigation }) => {
+	return {
+		headerLeft: (
+			<TouchableOpacity
+				style={{ marginLeft: 5 }}
+				onPress={() => navigation.openDrawer()}
+			>
+				<Image source={require("../assets/images/menu.png")}></Image>
+			</TouchableOpacity>
+		)
+	};
+};
+
 const styles = StyleSheet.create({
 	container: {
 		justifyContent: "center",
