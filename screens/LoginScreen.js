@@ -12,40 +12,39 @@ import {
 	KeyboardAvoidingView,
 	View
 } from "react-native";
-{/** 
+{
+	/** 
 import { MonoText } from "../components/StyledText";
 
-*/}
+*/
+}
 
-
-
-export default class LoginScreen extends React.Component{
-	state={
-		email:"",
-		password:""
+export default class LoginScreen extends React.Component {
+	state = {
+		email: "",
+		password: ""
 	};
 
-	handleEmailChange =(email:string) => {
-		this.setState({email:email});
+	handleEmailChange = email => {
+		this.setState({ email: email });
 	};
 
-	handlePasswordChange =(pasword:string) => {
-		this.setState({pasword:pasword});
+	handlePasswordChange = pasword => {
+		this.setState({ pasword: pasword });
 	};
 
 	handleLoginPress = () => {
 		console.log("login button pressed");
-	}
+	};
 
-
-	render(){
+	render() {
 		return (
-			<KeyboardAvoidingView style={styles.container} behavior="padding" >
+			<KeyboardAvoidingView style={styles.container} behavior="padding">
 				<Image
 					style={styles.logo}
 					source={require("../assets/images/Logo/logo.png")}
 				></Image>
-				
+
 				<View style={styles.form}>
 					<TextInput
 						style={styles.textBox}
@@ -59,15 +58,16 @@ export default class LoginScreen extends React.Component{
 						onChangeText={this.handlePasswordChange}
 						placeholder="Enter your password here"
 					/>
-					
-					<TouchableOpacity style={styles.loginButton}
-					onPress={() => {
-						this.props.navigation.navigate("Signup");
-						console.log("login button pressed");
-					}}
-					 >
-						 <Text style={styles.loginText}>LOGIN</Text>
-					 </TouchableOpacity>
+
+					<TouchableOpacity
+						style={styles.loginButton}
+						onPress={() => {
+							this.props.navigation.navigate("Signup");
+							console.log("login button pressed");
+						}}
+					>
+						<Text style={styles.loginText}>LOGIN</Text>
+					</TouchableOpacity>
 				</View>
 
 				<TouchableOpacity
@@ -76,7 +76,7 @@ export default class LoginScreen extends React.Component{
 						console.log("signup button is pressed");
 					}}
 				>
-				<Text style={styles.text}>Click here to Sign Up</Text>
+					<Text style={styles.text}>Click here to Sign Up</Text>
 				</TouchableOpacity>
 
 				<TouchableOpacity
@@ -93,9 +93,7 @@ export default class LoginScreen extends React.Component{
 				>
 					<Text style={styles.text}>Home</Text>
 				</TouchableOpacity>
-			
-		</KeyboardAvoidingView>	
-				
+			</KeyboardAvoidingView>
 		);
 	}
 }
@@ -115,24 +113,23 @@ const styles = StyleSheet.create({
 	},
 	loginText: {
 		color: "#fff",
-		alignSelf:"center"
+		alignSelf: "center"
 	},
-	form:{
-		marginTop:50,
-		justifyContent:"center",
-		width:"80%"
+	form: {
+		marginTop: 50,
+		justifyContent: "center",
+		width: "80%"
 	},
 	loginButton: {
-		backgroundColor:"#1f1f1f",
-		borderRadius:25,	
-		marginTop:25,
-		marginBottom:25,
-		padding:15,
-	
+		backgroundColor: "#1f1f1f",
+		borderRadius: 25,
+		marginTop: 25,
+		marginBottom: 25,
+		padding: 15
 	},
 	textBox: {
-		color:"white",
-		borderBottomColor: "white",
+		color: "white",
+		borderBottomColor: "white"
 	},
 	logo: {
 		height: 150,
