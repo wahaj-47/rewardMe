@@ -54,7 +54,7 @@ const ContainerStackNavigator = createStackNavigator(
 				borderBottomColor: "#fff"
 			},
 			headerLeft: (
-				<TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+				<TouchableOpacity onPress={() => navigation.openDrawer()}>
 					<Image
 						source={require("../assets/images/menu.png")}
 						style={{ tintColor: "#61DEFF", marginLeft: 5 }}

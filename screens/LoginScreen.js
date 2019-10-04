@@ -50,13 +50,15 @@ export default class LoginScreen extends React.Component {
 						style={styles.textBox}
 						value={this.state.email}
 						onChangeText={this.handleEmailChange}
-						placeholder="Enter your email here"
+						placeholder="Email"
+						placeholderTextColor="#c9c9c9"
 					/>
 					<TextInput
 						style={styles.textBox}
 						value={this.state.password}
 						onChangeText={this.handlePasswordChange}
-						placeholder="Enter your password here"
+						placeholder="Password"
+						placeholderTextColor="#c9c9c9"
 					/>
 
 					<TouchableOpacity
@@ -83,6 +85,7 @@ export default class LoginScreen extends React.Component {
 					onPress={() => {
 						this.props.navigation.navigate("ForgotPassword");
 					}}
+					style={{ marginTop: 10 }}
 				>
 					<Text style={styles.text}>Forgot Password?</Text>
 				</TouchableOpacity>
@@ -130,7 +133,10 @@ const styles = StyleSheet.create({
 	},
 	textBox: {
 		color: "white",
-		borderBottomColor: "white"
+		borderBottomWidth: StyleSheet.hairlineWidth,
+		borderBottomColor: "white",
+		paddingVertical: 5,
+		marginVertical: 5
 	},
 	logo: {
 		height: 150,
