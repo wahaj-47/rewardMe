@@ -42,6 +42,7 @@ const ContainerStackNavigator = createStackNavigator(
 		Main: MainDrawerNavigator
 	},
 	{
+		headerLayoutPreset: "center",
 		defaultNavigationOptions: ({ navigation }) => ({
 			title: "MERCEDES HAIRDRESSING",
 			headerTintColor: "#fff",
