@@ -3,12 +3,11 @@ import React from "react";
 import {
 	Image,
 	Platform,
-	ScrollView,
 	StyleSheet,
 	Text,
 	TouchableOpacity,
 	View,
-	Modal
+	ImageBackground
 } from "react-native";
 import * as Permissions from "expo-permissions";
 import { BarCodeScanner } from "expo-barcode-scanner";
@@ -21,7 +20,8 @@ export default class HomeScreen extends React.Component {
 		isScanning: false,
 		hasCameraPermission: null,
 		scanned: false,
-		dialogVisible: false
+		dialogVisible: false,
+		revealSlot: false
 	};
 
 	getPermissionsAsync = async () => {
@@ -44,23 +44,55 @@ export default class HomeScreen extends React.Component {
 			hasCameraPermission,
 			scanned,
 			isScanning,
-			dialogVisible
+			dialogVisible,
+			revealSlot
 		} = this.state;
 		return (
 			<View style={styles.container}>
 				<ConfirmDialog
-					title="Notice"
+					title="Thanks for Visiting Us"
 					animationType="fade"
-					visible={this.state.dialogVisible}
-					onTouchOutside={() => this.setState({ dialogVisible: false })}
+					visible={dialogVisible}
+					onTouchOutside={() =>
+						this.setState({ dialogVisible: false, revealSlot: false })
+					}
 					positiveButton={{
 						title: "Close",
-						onPress: () => this.setState({ dialogVisible: false })
+						onPress: () =>
+							this.setState({ dialogVisible: false, revealSlot: false })
 					}}
 				>
-					<View>
-						<Text>Thanks for visiting us</Text>
-					</View>
+					{!revealSlot ? (
+						<TouchableOpacity
+							onPress={() => this.setState({ revealSlot: true })}
+						>
+							<ImageBackground
+								source={require("../assets/images/slotUnrevealed.png")}
+								style={{
+									width: 150,
+									height: 150,
+									alignSelf: "center",
+									alignItems: "center",
+									justifyContent: "center"
+								}}
+							>
+								<Text style={styles.text}>Scratch & Save</Text>
+							</ImageBackground>
+						</TouchableOpacity>
+					) : (
+						<ImageBackground
+							source={require("../assets/images/slotRevealed.png")}
+							style={{
+								width: 150,
+								height: 150,
+								alignSelf: "center",
+								alignItems: "center",
+								justifyContent: "center"
+							}}
+						>
+							<Text style={styles.text}>Amount Saved</Text>
+						</ImageBackground>
+					)}
 				</ConfirmDialog>
 				{(isScanning && hasCameraPermission !== false) ||
 				hasCameraPermission !== null ? (
