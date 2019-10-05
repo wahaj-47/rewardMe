@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
 		alignSelf: "center"
 	},
 	form: {
-		marginTop: 50,
+		marginTop: 30,
 		justifyContent: "center",
 		width: "80%"
 	},
