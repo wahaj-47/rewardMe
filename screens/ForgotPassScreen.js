@@ -35,13 +35,11 @@ export default class ForgotPassScreen extends React.Component {
 	render() {
 		return (
 			<KeyboardAvoidingView style={styles.container} behavior="padding">
-				<View style={styles.headingContainer} >
-						<Text style={styles.mainHeading}>Forgot Password?</Text>
-						<Text style={styles.subHeading}>Get password set Email</Text>
-				</View>
-
 				<View style={styles.form}>
-					
+					<View style={styles.headingContainer} >
+							<Text style={styles.mainHeading}>Forgot Password?</Text>
+							<Text style={styles.subHeading}>Get password set Email</Text>
+					</View>
 
 					<View style={styles.subContainer}>
 						<Text style={styles.headings}>
