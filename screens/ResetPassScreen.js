@@ -39,14 +39,13 @@ export default class ResetPassScreen extends React.Component {
 	render() {
 		return (
 			<KeyboardAvoidingView style={styles.container} behavior="padding">
-				<View style={styles.headingContainer}>
-					<Text style={styles.mainHeading}>New Password</Text>
-					<Text style={styles.subHeading}>
-						The code has been sent to your email
-					</Text>
-				</View>
-
 				<View style={styles.form}>
+					<View style={styles.headingContainer}>
+						<Text style={styles.mainHeading}>New Password</Text>
+						<Text style={styles.subHeading}>
+							The code has been sent to your email
+						</Text>
+					</View>
 					<View style={styles.subContainer}>
 						<Text style={styles.headings}>6 Digit Code</Text>
 						<TextInput
