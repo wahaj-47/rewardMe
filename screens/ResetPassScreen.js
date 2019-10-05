@@ -21,8 +21,8 @@ import { MonoText } from "../components/StyledText";
 
 export default class ResetPassScreen extends React.Component {
 	state = {
-		Code:"",
-		password:""
+		Code: "",
+		password: ""
 	};
 	handleCodeChange = code => {
 		this.setState({ code: code });
@@ -39,16 +39,16 @@ export default class ResetPassScreen extends React.Component {
 	render() {
 		return (
 			<KeyboardAvoidingView style={styles.container} behavior="padding">
-				<View style={styles.headingContainer} >
-						<Text style={styles.mainHeading}>New Password</Text>
-						<Text style={styles.subHeading}>The code has been sent to your email</Text>
+				<View style={styles.headingContainer}>
+					<Text style={styles.mainHeading}>New Password</Text>
+					<Text style={styles.subHeading}>
+						The code has been sent to your email
+					</Text>
 				</View>
 
 				<View style={styles.form}>
 					<View style={styles.subContainer}>
-						<Text style={styles.headings}>
-						6 Digit Code
-						</Text>
+						<Text style={styles.headings}>6 Digit Code</Text>
 						<TextInput
 							style={styles.textBox}
 							value={this.state.code}
@@ -58,9 +58,7 @@ export default class ResetPassScreen extends React.Component {
 					</View>
 
 					<View style={styles.subContainer}>
-						<Text style={styles.headings}>
-						New Password
-						</Text>
+						<Text style={styles.headings}>New Password</Text>
 						<TextInput
 							style={styles.textBox}
 							value={this.state.password}
@@ -79,22 +77,21 @@ export default class ResetPassScreen extends React.Component {
 						<Text style={styles.signUpText}>Confirm New Password</Text>
 					</TouchableOpacity>
 				</View>
-				
+
 				<TouchableOpacity
 					onPress={() => {
 						this.props.navigation.navigate("ResetPassword");
 						console.log("login button is pressed");
 					}}
 				>
-					<Text style={styles.text}>Didn't receive the code? Click here to resend.</Text>
+					<Text style={styles.text}>
+						Didn't receive the code? Click here to resend.
+					</Text>
 				</TouchableOpacity>
 			</KeyboardAvoidingView>
 		);
 	}
 }
-ResetPassScreen.navigationOptions = {
-	header: null
-};
 
 const styles = StyleSheet.create({
 	container: {
@@ -133,25 +130,24 @@ const styles = StyleSheet.create({
 		height: 150,
 		width: 240
 	},
-	headings:{
+	headings: {
 		fontSize: 15,
-		fontWeight:"bold",
-		color:"white"
+		fontWeight: "bold",
+		color: "white"
 	},
-	subContainer:{
-		paddingBottom:20
+	subContainer: {
+		paddingBottom: 20
 	},
-	mainHeading:{
+	mainHeading: {
 		fontSize: 30,
-		fontWeight:"bold",
-		color:"white"
+		fontWeight: "bold",
+		color: "white"
 	},
-	headingContainer:{
-	
-		paddingBottom:30
+	headingContainer: {
+		paddingBottom: 30
 	},
-	subHeading:{
+	subHeading: {
 		fontSize: 15,
-		color:"white"
+		color: "white"
 	}
 });

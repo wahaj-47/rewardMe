@@ -21,12 +21,11 @@ import { MonoText } from "../components/StyledText";
 
 export default class ForgotPassScreen extends React.Component {
 	state = {
-		email: "",
+		email: ""
 	};
 	handleEmailChange = email => {
 		this.setState({ email: email });
 	};
-
 
 	handleForgotPassPress = () => {
 		console.log("Forgot pass button pressed");
@@ -35,18 +34,14 @@ export default class ForgotPassScreen extends React.Component {
 	render() {
 		return (
 			<KeyboardAvoidingView style={styles.container} behavior="padding">
-				<View style={styles.headingContainer} >
-						<Text style={styles.mainHeading}>Forgot Password?</Text>
-						<Text style={styles.subHeading}>Get password set Email</Text>
+				<View style={styles.headingContainer}>
+					<Text style={styles.mainHeading}>Forgot Password?</Text>
+					<Text style={styles.subHeading}>Get password set Email</Text>
 				</View>
 
 				<View style={styles.form}>
-					
-
 					<View style={styles.subContainer}>
-						<Text style={styles.headings}>
-						Email
-						</Text>
+						<Text style={styles.headings}>Email</Text>
 						<TextInput
 							style={styles.textBox}
 							value={this.state.email}
@@ -54,7 +49,7 @@ export default class ForgotPassScreen extends React.Component {
 							placeholder="Enter your email here"
 						/>
 					</View>
-					
+
 					<TouchableOpacity
 						style={styles.signUpButton}
 						onPress={() => {
@@ -65,7 +60,7 @@ export default class ForgotPassScreen extends React.Component {
 						<Text style={styles.signUpText}>Send Reset Email</Text>
 					</TouchableOpacity>
 				</View>
-				
+
 				<TouchableOpacity
 					onPress={() => {
 						this.props.navigation.navigate("Login");
@@ -78,9 +73,6 @@ export default class ForgotPassScreen extends React.Component {
 		);
 	}
 }
-ForgotPassScreen.navigationOptions = {
-	header: null
-};
 
 const styles = StyleSheet.create({
 	container: {
@@ -119,27 +111,26 @@ const styles = StyleSheet.create({
 		height: 150,
 		width: 240
 	},
-	headings:{
+	headings: {
 		fontSize: 15,
-		fontWeight:"bold",
-		color:"white"
+		fontWeight: "bold",
+		color: "white"
 	},
-	subContainer:{
-		paddingBottom:70,
-		paddingTop:50
+	subContainer: {
+		paddingBottom: 70,
+		paddingTop: 50
 	},
-	mainHeading:{
+	mainHeading: {
 		fontSize: 30,
-		fontWeight:"bold",
-		color:"white"
+		fontWeight: "bold",
+		color: "white"
 	},
-	headingContainer:{
-		marginLeft:0,
-		paddingLeft:0,
-		paddingBottom:30
+	headingContainer: {
+		justifyContent: "flex-start",
+		paddingBottom: 30
 	},
-	subHeading:{
+	subHeading: {
 		fontSize: 15,
-		color:"white"
+		color: "white"
 	}
 });

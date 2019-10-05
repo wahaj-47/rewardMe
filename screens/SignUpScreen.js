@@ -22,7 +22,7 @@ import { MonoText } from "../components/StyledText";
 
 export default class SignUpScreen extends React.Component {
 	state = {
-		name:"",
+		name: "",
 		email: "",
 		password: ""
 	};
@@ -44,29 +44,24 @@ export default class SignUpScreen extends React.Component {
 	render() {
 		return (
 			<KeyboardAvoidingView style={styles.container} behavior="padding">
-				
 				<View style={styles.form}>
-					<View style={styles.headingContainer} >
+					<View style={styles.headingContainer}>
 						<Text style={styles.mainHeading}>Sign Up</Text>
 						<Text style={styles.subHeading}>Sign Up to join</Text>
 					</View>
 
 					<View style={styles.subContainer}>
-						<Text style={styles.headings}>
-							Name
-						</Text>
-							<TextInput
-								style={styles.textBox}
-								value={this.state.name}
-								onChangeText={this.handleNameChange}
-								placeholder="Enter your name here"
+						<Text style={styles.headings}>Name</Text>
+						<TextInput
+							style={styles.textBox}
+							value={this.state.name}
+							onChangeText={this.handleNameChange}
+							placeholder="Enter your name here"
 						/>
 					</View>
 
 					<View style={styles.subContainer}>
-						<Text style={styles.headings}>
-						Email
-						</Text>
+						<Text style={styles.headings}>Email</Text>
 						<TextInput
 							style={styles.textBox}
 							value={this.state.email}
@@ -75,9 +70,7 @@ export default class SignUpScreen extends React.Component {
 						/>
 					</View>
 					<View style={styles.subContainer}>
-						<Text style={styles.headings}>
-						Password
-						</Text>
+						<Text style={styles.headings}>Password</Text>
 						<TextInput
 							style={styles.textBox}
 							value={this.state.password}
@@ -96,7 +89,7 @@ export default class SignUpScreen extends React.Component {
 						<Text style={styles.signUpText}>SIGN UP</Text>
 					</TouchableOpacity>
 				</View>
-				
+
 				<TouchableOpacity
 					onPress={() => {
 						this.props.navigation.navigate("Login");
@@ -109,9 +102,6 @@ export default class SignUpScreen extends React.Component {
 		);
 	}
 }
-SignUpScreen.navigationOptions = {
-	header: null
-};
 
 const styles = StyleSheet.create({
 	container: {
@@ -150,24 +140,24 @@ const styles = StyleSheet.create({
 		height: 150,
 		width: 240
 	},
-	headings:{
+	headings: {
 		fontSize: 15,
-		fontWeight:"bold",
-		color:"white"
+		fontWeight: "bold",
+		color: "white"
 	},
-	subContainer:{
-		paddingBottom:20
+	subContainer: {
+		paddingBottom: 20
 	},
-	mainHeading:{
+	mainHeading: {
 		fontSize: 30,
-		fontWeight:"bold",
-		color:"white"
+		fontWeight: "bold",
+		color: "white"
 	},
-	headingContainer:{
-		paddingBottom:30
+	headingContainer: {
+		paddingBottom: 30
 	},
-	subHeading:{
+	subHeading: {
 		fontSize: 15,
-		color:"white"
+		color: "white"
 	}
 });

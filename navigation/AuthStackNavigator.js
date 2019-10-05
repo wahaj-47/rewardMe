@@ -6,11 +6,22 @@ import SignUpScreen from "../screens/SignUpScreen.js";
 import ResetPassScreen from "../screens/ResetPassScreen.js";
 import ForgotPassScreen from "../screens/ForgotPassScreen.js";
 
-const AuthStack = createStackNavigator({
-	Login: LoginScreen,
-	Signup: SignUpScreen,
-	ForgotPassword: ForgotPassScreen,
-	ResetPassword: ResetPassScreen
-});
+const AuthStack = createStackNavigator(
+	{
+		Login: LoginScreen,
+		Signup: SignUpScreen,
+		ForgotPassword: ForgotPassScreen,
+		ResetPassword: ResetPassScreen
+	},
+	{
+		defaultNavigationOptions: {
+			headerTintColor: "#fff",
+			headerStyle: {
+				backgroundColor: "#000",
+				borderBottomWidth: 0
+			}
+		}
+	}
+);
 
 export default AuthStack;
