@@ -19,80 +19,66 @@ import { MonoText } from "../components/StyledText";
 */
 }
 
-export default class ResetPassScreen extends React.Component {
+export default class ForgotPassScreen extends React.Component {
 	state = {
-		Code:"",
-		password:""
+		email: "",
 	};
-	handleCodeChange = code => {
-		this.setState({ code: code });
-	};
-
-	handlePasswordChange = pasword => {
-		this.setState({ pasword: pasword });
+	handleEmailChange = email => {
+		this.setState({ email: email });
 	};
 
-	handleResetPress = () => {
-		console.log("Reset button pressed");
+
+	handleForgotPassPress = () => {
+		console.log("Forgot pass button pressed");
 	};
 
 	render() {
 		return (
 			<KeyboardAvoidingView style={styles.container} behavior="padding">
 				<View style={styles.headingContainer} >
-						<Text style={styles.mainHeading}>New Password</Text>
-						<Text style={styles.subHeading}>The code has been sent to your provided email</Text>
+						<Text style={styles.mainHeading}>Forgot Password?</Text>
+						<Text style={styles.subHeading}>Get password set Email</Text>
 				</View>
 
 				<View style={styles.form}>
-					<View style={styles.subContainer}>
-						<Text style={styles.headings}>
-						6 Digit Code
-						</Text>
-						<TextInput
-							style={styles.textBox}
-							value={this.state.code}
-							onChangeText={this.handleCodeChange}
-							placeholder="Enter the reset code here"
-						/>
-					</View>
+					
 
 					<View style={styles.subContainer}>
 						<Text style={styles.headings}>
-						New Password
+						Email
 						</Text>
 						<TextInput
 							style={styles.textBox}
-							value={this.state.password}
-							onChangeText={this.handlePasswordChange}
-							placeholder="Enter your new password here"
+							value={this.state.email}
+							onChangeText={this.handleEmailChange}
+							placeholder="Enter your email here"
 						/>
 					</View>
-
+					
 					<TouchableOpacity
 						style={styles.signUpButton}
 						onPress={() => {
-							this.props.navigation.navigate("Main");
+							this.props.navigation.navigate("ResetPassword");
 							console.log("login button pressed");
 						}}
 					>
-						<Text style={styles.signUpText}>Confirm New Password</Text>
+						<Text style={styles.signUpText}>Send Reset Email</Text>
 					</TouchableOpacity>
 				</View>
 				
 				<TouchableOpacity
 					onPress={() => {
-						this.props.navigation.navigate("ResetPassword");
+						this.props.navigation.navigate("Login");
 						console.log("login button is pressed");
 					}}
 				>
-					<Text style={styles.text}>Didn't receive the code? Click here to resend.</Text>
+					<Text style={styles.text}>Click here to Log in</Text>
 				</TouchableOpacity>
 			</KeyboardAvoidingView>
 		);
 	}
 }
-ResetPassScreen.navigationOptions = {
+ForgotPassScreen.navigationOptions = {
 	header: null
 };
 
