@@ -125,7 +125,8 @@ const styles = StyleSheet.create({
 		color:"white"
 	},
 	subContainer:{
-		paddingBottom:20
+		paddingBottom:70,
+		paddingTop:50
 	},
 	mainHeading:{
 		fontSize: 30,
@@ -133,7 +134,8 @@ const styles = StyleSheet.create({
 		color:"white"
 	},
 	headingContainer:{
-	
+		marginLeft:0,
+		paddingLeft:0,
 		paddingBottom:30
 	},
 	subHeading:{

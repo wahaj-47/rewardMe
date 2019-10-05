@@ -41,7 +41,7 @@ export default class ResetPassScreen extends React.Component {
 			<KeyboardAvoidingView style={styles.container} behavior="padding">
 				<View style={styles.headingContainer} >
 						<Text style={styles.mainHeading}>New Password</Text>
-						<Text style={styles.subHeading}>The code has been sent to your provided email</Text>
+						<Text style={styles.subHeading}>The code has been sent to your email</Text>
 				</View>
 
 				<View style={styles.form}>
