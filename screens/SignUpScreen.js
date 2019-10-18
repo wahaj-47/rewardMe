@@ -13,6 +13,7 @@ import {
 	View
 } from "react-native";
 import Layout from "../constants/Layout";
+import axios from "axios";
 {
 	/** 
 import { MonoText } from "../components/StyledText";
@@ -33,12 +34,25 @@ export default class SignUpScreen extends React.Component {
 		this.setState({ email: email });
 	};
 
-	handlePasswordChange = pasword => {
-		this.setState({ pasword: pasword });
+	handlePasswordChange = password => {
+		this.setState({ password: password });
 	};
 
 	handleSignUpPress = () => {
 		console.log("Signup button pressed");
+	};
+
+	requestRegistration = () => {
+		axios
+			.get("/signUp")
+			.then(function(response) {
+				// handle success
+				console.log(response);
+			})
+			.catch(function(error) {
+				// handle error
+				console.log(error);
+			});
 	};
 
 	render() {
@@ -53,6 +67,8 @@ export default class SignUpScreen extends React.Component {
 					<View style={styles.subContainer}>
 						<Text style={styles.headings}>Name</Text>
 						<TextInput
+							textContentType="name"
+							autoCapitalize="words"
 							style={styles.textBox}
 							value={this.state.name}
 							onChangeText={this.handleNameChange}
@@ -63,6 +79,10 @@ export default class SignUpScreen extends React.Component {
 					<View style={styles.subContainer}>
 						<Text style={styles.headings}>Email</Text>
 						<TextInput
+							textContentType="emailAddress"
+							autoCapitalize="none"
+							keyboardType="email-address"
+							autoCompleteType="email"
 							style={styles.textBox}
 							value={this.state.email}
 							onChangeText={this.handleEmailChange}
@@ -72,6 +92,9 @@ export default class SignUpScreen extends React.Component {
 					<View style={styles.subContainer}>
 						<Text style={styles.headings}>Password</Text>
 						<TextInput
+							textContentType="password"
+							autoCompleteType="password"
+							autoCapitalize="none"
 							style={styles.textBox}
 							value={this.state.password}
 							onChangeText={this.handlePasswordChange}
@@ -82,7 +105,8 @@ export default class SignUpScreen extends React.Component {
 					<TouchableOpacity
 						style={styles.signUpButton}
 						onPress={() => {
-							this.props.navigation.navigate("Main");
+							this.requestRegistration();
+							// this.props.navigation.navigate("Main");
 							console.log("login button pressed");
 						}}
 					>
