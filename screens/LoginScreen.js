@@ -2,16 +2,16 @@ import * as WebBrowser from "expo-web-browser";
 import React from "react";
 import {
 	Image,
-	Platform,
-	ScrollView,
 	StyleSheet,
 	Text,
 	TouchableOpacity,
 	TextInput,
-	Button,
 	KeyboardAvoidingView,
 	View
 } from "react-native";
+import Constants from "expo-constants";
+import axios from "axios";
+
 {
 	/** 
 import { MonoText } from "../components/StyledText";
@@ -22,19 +22,54 @@ import { MonoText } from "../components/StyledText";
 export default class LoginScreen extends React.Component {
 	state = {
 		email: "",
-		password: ""
+		password: "",
+		isFormValid: false,
+		loggedIn: true
 	};
+
+	componentDidMount() {
+		const { manifest } = Constants;
+		const api =
+			typeof manifest.packagerOpts === `object` && manifest.packagerOpts.dev
+				? manifest.debuggerHost
+						.split(`:`)
+						.shift()
+						.concat(`:4000`)
+				: `api.example.com`;
+		this.setState({ api });
+	}
 
 	handleEmailChange = email => {
 		this.setState({ email: email });
+		if (this.state.email.length > 0 && this.state.password.length > 0) {
+			this.setState({ isFormValid: true });
+		} else {
+			this.setState({ isFormValid: false });
+		}
 	};
 
-	handlePasswordChange = pasword => {
-		this.setState({ pasword: pasword });
+	handlePasswordChange = password => {
+		this.setState({ password: password });
+		if (this.state.email.length > 0 && this.state.password.length > 0) {
+			this.setState({ isFormValid: true });
+		} else {
+			this.setState({ isFormValid: false });
+		}
 	};
 
-	handleLoginPress = () => {
+	handleLoginPress = async () => {
 		console.log("login button pressed");
+
+		let response = await axios.post("http://" + this.state.api + "/login", {
+			email: this.state.email,
+			password: this.state.password
+		});
+
+		if (response.data.loggedIn) {
+			this.props.navigation.navigate("Home", { token: response.data.token });
+		} else {
+			this.setState({ loggedIn: response.data.loggedIn });
+		}
 	};
 
 	render() {
@@ -52,6 +87,9 @@ export default class LoginScreen extends React.Component {
 						onChangeText={this.handleEmailChange}
 						placeholder="Email"
 						placeholderTextColor="#c9c9c9"
+						autoCompleteType="email"
+						autoCapitalize="none"
+						keyboardType="email-address"
 					/>
 					<TextInput
 						style={styles.textBox}
@@ -59,14 +97,22 @@ export default class LoginScreen extends React.Component {
 						onChangeText={this.handlePasswordChange}
 						placeholder="Password"
 						placeholderTextColor="#c9c9c9"
+						autoCompleteType="password"
+						autoCapitalize="none"
 					/>
 
+					{!this.state.loggedIn ? (
+						<Text style={{ color: "red", alignSelf: "center" }}>
+							Incorrect email or password
+						</Text>
+					) : (
+						<></>
+					)}
+
 					<TouchableOpacity
+						disabled={!this.state.isFormValid}
 						style={styles.loginButton}
-						onPress={() => {
-							this.props.navigation.navigate("Main");
-							console.log("login button pressed");
-						}}
+						onPress={this.handleLoginPress}
 					>
 						<Text style={styles.loginText}>LOGIN</Text>
 					</TouchableOpacity>

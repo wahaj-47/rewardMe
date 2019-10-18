@@ -1,56 +1,60 @@
 Arguments: 
-  C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js
+  C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js add expo-constants@~7.0.0
 
 PATH: 
-  C:\Users\Admin\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\local\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Users\Admin\bin;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0;C:\WINDOWS\System32\OpenSSH;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\IPT;C:\Program Files\Intel\Intel(R) Management Engine Components\IPT;C:\Program Files\Git\cmd;C:\Program Files\nodejs;C:\Program Files (x86)\Yarn\bin;C:\Program Files\dotnet;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn;C:\Program Files\AndroidSDK\tools\bin;C:\Program Files\Java\jdk1.8.0_221\bin;C:\Program Files\Java\jre1.8.0_221\bin;C:\Program Files\AndroidSDK\emulator;C:\Program Files\AndroidSDK\platform-tools;C:\Users\Admin\AppData\Local\Programs\Python\Python37\Scripts;C:\Users\Admin\AppData\Local\Programs\Python\Python37;C:\Users\Admin\AppData\Local\Microsoft\WindowsApps;C:\Users\Admin\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\Admin\AppData\Roaming\npm;C:\Users\Admin\AppData\Local\Yarn\bin;C:\Program Files\Git\usr\bin\vendor_perl;C:\Program Files\Git\usr\bin\core_perl
+  C:\Users\Admin\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\local\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Users\Admin\bin;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0;C:\WINDOWS\System32\OpenSSH;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\IPT;C:\Program Files\Intel\Intel(R) Management Engine Components\IPT;C:\Program Files\Git\cmd;C:\Program Files (x86)\Yarn\bin;C:\Program Files\dotnet;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn;C:\Program Files\AndroidSDK\tools\bin;C:\Program Files\Java\jdk1.8.0_221\bin;C:\Program Files\Java\jre1.8.0_221\bin;C:\Program Files\AndroidSDK\emulator;C:\Program Files\AndroidSDK\platform-tools;%NVM_HOME%;%NVM_SYMLINK%;C:\Users\Admin\AppData\Local\Programs\Python\Python37\Scripts;C:\Users\Admin\AppData\Local\Programs\Python\Python37;C:\Users\Admin\AppData\Local\Microsoft\WindowsApps;C:\Users\Admin\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\Admin\AppData\Local\Yarn\bin;C:\Users\Admin\AppData\Roaming\nvm;C:\Program Files\nodejs;C:\Program Files\Git\usr\bin\vendor_perl;C:\Program Files\Git\usr\bin\core_perl
 
 Yarn version: 
   1.15.2
 
 Node version: 
-  10.15.3
+  10.16.3
 
 Platform: 
   win32 x64
 
 Trace: 
-  Error: ENOTEMPTY: directory not empty, rmdir 'D:\rewardMe\node_modules\color-string'
+  Error: EPERM: operation not permitted, unlink 'D:\rewardMe\node_modules\string-width\node_modules\ansi-regex'
 
 npm manifest: 
   {
-    "main": "node_modules/expo/AppEntry.js",
-    "scripts": {
-      "start": "expo start",
-      "android": "expo start --android",
-      "ios": "expo start --ios",
-      "web": "expo start --web",
-      "eject": "expo eject",
-      "test": "jest --watchAll"
-    },
-    "jest": {
-      "preset": "jest-expo"
-    },
-    "dependencies": {
-      "@expo/samples": "~3.0.3",
-      "@expo/vector-icons": "^10.0.3",
-      "@react-navigation/web": "^1.0.0-alpha.9",
-      "expo": "^35.0.0",
-      "expo-asset": "^7.0.0",
-      "expo-constants": "^7.0.0",
-      "expo-font": "^7.0.0",
-      "expo-web-browser": "^7.0.0",
-      "react": "16.8.3",
-      "react-dom": "16.8.3",
-      "react-native": "https://github.com/expo/react-native/archive/sdk-35.0.0.tar.gz",
-      "react-native-gesture-handler": "~1.3.0",
-      "react-native-web": "^0.11.7",
-      "react-navigation": "^3.12.0"
-    },
-    "devDependencies": {
-      "babel-preset-expo": "^7.0.0",
-      "jest-expo": "^35.0.0"
-    },
-    "private": true
+  	"main": "node_modules/expo/AppEntry.js",
+  	"proxy": "http://localhost:3000",
+  	"scripts": {
+  		"start": "expo start",
+  		"android": "expo start --android",
+  		"ios": "expo start --ios",
+  		"web": "expo start --web",
+  		"eject": "expo eject",
+  		"test": "jest --watchAll"
+  	},
+  	"jest": {
+  		"preset": "jest-expo"
+  	},
+  	"dependencies": {
+  		"@expo/samples": "~3.0.3",
+  		"@expo/vector-icons": "^10.0.3",
+  		"@react-navigation/web": "^1.0.0-alpha.9",
+  		"axios": "^0.19.0",
+  		"expo": "^35.0.0",
+  		"expo-asset": "^7.0.0",
+  		"expo-barcode-scanner": "~7.0.0",
+  		"expo-constants": "^7.0.0",
+  		"expo-font": "^7.0.0",
+  		"expo-web-browser": "^7.0.0",
+  		"react": "16.8.3",
+  		"react-dom": "16.8.3",
+  		"react-native": "https://github.com/expo/react-native/archive/sdk-35.0.0.tar.gz",
+  		"react-native-gesture-handler": "~1.3.0",
+  		"react-native-simple-dialogs": "^1.2.0",
+  		"react-native-web": "^0.11.7",
+  		"react-navigation": "^3.12.0"
+  	},
+  	"devDependencies": {
+  		"babel-preset-expo": "^7.0.0",
+  		"jest-expo": "^35.0.0"
+  	},
+  	"private": true
   }
 
 yarn manifest: 
@@ -2587,6 +2591,14 @@ Lockfile:
       blueimp-md5 "^2.10.0"
       path-browserify "^1.0.0"
       url-parse "^1.4.4"
+  
+  expo-barcode-scanner@~7.0.0:
+    version "7.0.0"
+    resolved "https://registry.yarnpkg.com/expo-barcode-scanner/-/expo-barcode-scanner-7.0.0.tgz#75bb2dc66565f9e46ae1d4330452e2c96a4b5a7f"
+    integrity sha512-n8a/Xqtumw+o19PjFrPw12jfEyjA/UtJLAmXAiS0h+ociinjIkJKnLbCwUcCODLsgc6nn2lhd6TtZgQdvFEnbw==
+    dependencies:
+      lodash "^4.6.0"
+      prop-types "^15.6.0"
   
   expo-constants@^7.0.0, expo-constants@~7.0.0:
     version "7.0.0"
@@ -5687,6 +5699,11 @@ Lockfile:
     integrity sha512-tOxHGQUN83MTmQB4ghoQkibqOdGiX4JQEmeyEv96MKWO/x8T2PJv84ECUos9hD3blPRQwVwSpAid1PPPhrVEaw==
     dependencies:
       debounce "^1.2.0"
+  
+  react-native-simple-dialogs@^1.2.0:
+    version "1.2.0"
+    resolved "https://registry.yarnpkg.com/react-native-simple-dialogs/-/react-native-simple-dialogs-1.2.0.tgz#d3fa8e7b46ea563eed9ee4882e804b9d1b9f3c59"
+    integrity sha512-vH6uYovNeeZmYJbMVWVDF4n8acuPxO/D+iGdnF63j62sVfoR9+4ib7LzqBhYKp6jfwy8keEa/c1hOyabMQx3gQ==
   
   react-native-tab-view@^1.2.0, react-native-tab-view@^1.4.1:
     version "1.4.1"
