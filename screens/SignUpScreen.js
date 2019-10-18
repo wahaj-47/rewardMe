@@ -13,7 +13,9 @@ import {
 	View
 } from "react-native";
 import Layout from "../constants/Layout";
+import Constants from "expo-constants";
 import axios from "axios";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 {
 	/** 
 import { MonoText } from "../components/StyledText";
@@ -25,39 +27,86 @@ export default class SignUpScreen extends React.Component {
 	state = {
 		name: "",
 		email: "",
-		password: ""
+		password: "",
+		isFormValid: false
 	};
+
+	componentDidMount() {
+		const { manifest } = Constants;
+		const api =
+			typeof manifest.packagerOpts === `object` && manifest.packagerOpts.dev
+				? manifest.debuggerHost
+						.split(`:`)
+						.shift()
+						.concat(`:4000`)
+				: `api.example.com`;
+		this.setState({ api });
+	}
+
 	handleNameChange = name => {
 		this.setState({ name: name });
+		if (
+			this.state.name.length > 0 &&
+			this.state.email.length > 0 &&
+			this.state.password.length > 6
+		) {
+			this.setState({ isFormValid: true });
+		} else {
+			this.setState({ isFormValid: false });
+		}
 	};
+
 	handleEmailChange = email => {
 		this.setState({ email: email });
+		if (
+			this.state.name.length > 0 &&
+			this.state.email.length > 0 &&
+			this.state.password.length > 6
+		) {
+			this.setState({ isFormValid: true });
+		} else {
+			this.setState({ isFormValid: false });
+		}
 	};
 
 	handlePasswordChange = password => {
 		this.setState({ password: password });
+		if (
+			this.state.name.length > 0 &&
+			this.state.email.length > 0 &&
+			this.state.password.length > 6
+		) {
+			this.setState({ isFormValid: true });
+		} else {
+			this.setState({ isFormValid: false });
+		}
 	};
 
-	handleSignUpPress = () => {
+	handleSignUpPress = async () => {
 		console.log("Signup button pressed");
-	};
+		let response = await axios.post(
+			"http://" + this.state.api + "/signUp/checkExisting",
+			{
+				email: this.state.email
+			}
+		);
 
-	requestRegistration = () => {
-		axios
-			.get("/signUp")
-			.then(function(response) {
-				// handle success
-				console.log(response);
-			})
-			.catch(function(error) {
-				// handle error
-				console.log(error);
+		if (response.data.isEmailValid) {
+			let res = await axios.post("http://" + this.state.api + "/signUp", {
+				name: this.state.name,
+				email: this.state.email,
+				password: this.state.password
 			});
+		} else {
+		}
 	};
 
 	render() {
 		return (
-			<KeyboardAvoidingView style={styles.container} behavior="padding">
+			<KeyboardAwareScrollView
+				contentContainerStyle={styles.container}
+				scrollEnabled={false}
+			>
 				<View style={styles.form}>
 					<View style={styles.headingContainer}>
 						<Text style={styles.mainHeading}>Sign Up</Text>
@@ -102,13 +151,14 @@ export default class SignUpScreen extends React.Component {
 						/>
 					</View>
 
+					<Text style={[styles.text, { fontSize: 10, alignSelf: "center" }]}>
+						Password must be atleast 8 characters long
+					</Text>
+
 					<TouchableOpacity
+						disabled={!this.state.isFormValid}
 						style={styles.signUpButton}
-						onPress={() => {
-							this.requestRegistration();
-							// this.props.navigation.navigate("Main");
-							console.log("login button pressed");
-						}}
+						onPress={this.handleSignUpPress}
 					>
 						<Text style={styles.signUpText}>SIGN UP</Text>
 					</TouchableOpacity>
@@ -122,7 +172,7 @@ export default class SignUpScreen extends React.Component {
 				>
 					<Text style={styles.text}>Click here to Log in</Text>
 				</TouchableOpacity>
-			</KeyboardAvoidingView>
+			</KeyboardAwareScrollView>
 		);
 	}
 }

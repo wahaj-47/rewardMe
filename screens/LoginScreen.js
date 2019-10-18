@@ -7,11 +7,12 @@ import {
 	TouchableOpacity,
 	TextInput,
 	KeyboardAvoidingView,
-	View
+	View,
+	Keyboard
 } from "react-native";
 import Constants from "expo-constants";
 import axios from "axios";
-
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 {
 	/** 
 import { MonoText } from "../components/StyledText";
@@ -74,7 +75,10 @@ export default class LoginScreen extends React.Component {
 
 	render() {
 		return (
-			<KeyboardAvoidingView style={styles.container} behavior="padding">
+			<KeyboardAwareScrollView
+				contentContainerStyle={styles.container}
+				scrollEnabled={false}
+			>
 				<Image
 					style={styles.logo}
 					source={require("../assets/images/Logo/logo.png")}
@@ -143,7 +147,7 @@ export default class LoginScreen extends React.Component {
 				>
 					<Text style={styles.text}>Home</Text>
 				</TouchableOpacity> */}
-			</KeyboardAvoidingView>
+			</KeyboardAwareScrollView>
 		);
 	}
 }
