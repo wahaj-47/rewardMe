@@ -28,19 +28,12 @@ export default class SignUpScreen extends React.Component {
 		name: "",
 		email: "",
 		password: "",
-		isFormValid: false
+		isFormValid: false,
+		isEmailValid: true
 	};
 
 	componentDidMount() {
-		const { manifest } = Constants;
-		const api =
-			typeof manifest.packagerOpts === `object` && manifest.packagerOpts.dev
-				? manifest.debuggerHost
-						.split(`:`)
-						.shift()
-						.concat(`:4000`)
-				: `api.example.com`;
-		this.setState({ api });
+		this.setState({ api: this.props.screenProps.api });
 	}
 
 	handleNameChange = name => {
@@ -98,6 +91,7 @@ export default class SignUpScreen extends React.Component {
 				password: this.state.password
 			});
 		} else {
+			this.setState({ isEmailValid: response.data.isEmailValid });
 		}
 	};
 
@@ -154,6 +148,12 @@ export default class SignUpScreen extends React.Component {
 					<Text style={[styles.text, { fontSize: 10, alignSelf: "center" }]}>
 						Password must be atleast 8 characters long
 					</Text>
+
+					{!this.state.isEmailValid && (
+						<Text style={{ color: "red", fontSize: 10, alignSelf: "center" }}>
+							Email already in use
+						</Text>
+					)}
 
 					<TouchableOpacity
 						disabled={!this.state.isFormValid}

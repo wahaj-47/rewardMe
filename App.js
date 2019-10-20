@@ -4,16 +4,18 @@ import * as Font from "expo-font";
 import React, { useState } from "react";
 import { Platform, StatusBar, StyleSheet, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import Constants from "expo-constants";
 
 import AppNavigator from "./navigation/AppNavigator";
 
 export default function App(props) {
 	const [isLoadingComplete, setLoadingComplete] = useState(false);
+	const [api, setApi] = useState("");
 
 	if (!isLoadingComplete && !props.skipLoadingScreen) {
 		return (
 			<AppLoading
-				startAsync={loadResourcesAsync}
+				startAsync={() => loadResourcesAsync(setApi)}
 				onError={handleLoadingError}
 				onFinish={() => handleFinishLoading(setLoadingComplete)}
 			/>
@@ -22,13 +24,13 @@ export default function App(props) {
 		return (
 			<View style={styles.container}>
 				{Platform.OS === "ios" && <StatusBar barStyle="light-content" />}
-				<AppNavigator />
+				<AppNavigator screenProps={{ api }} />
 			</View>
 		);
 	}
 }
 
-async function loadResourcesAsync() {
+async function loadResourcesAsync(setApi) {
 	await Promise.all([
 		Asset.loadAsync([
 			require("./assets/images/Logo/logo.png"),
@@ -51,6 +53,15 @@ async function loadResourcesAsync() {
 			"space-mono": require("./assets/fonts/SpaceMono-Regular.ttf")
 		})
 	]);
+	const { manifest } = Constants;
+	const api =
+		typeof manifest.packagerOpts === `object` && manifest.packagerOpts.dev
+			? manifest.debuggerHost
+					.split(`:`)
+					.shift()
+					.concat(`:4000`)
+			: `api.example.com`;
+	setApi(api);
 }
 
 function handleLoadingError(error) {
@@ -60,6 +71,7 @@ function handleLoadingError(error) {
 }
 
 function handleFinishLoading(setLoadingComplete) {
+	console.log();
 	setLoadingComplete(true);
 }
 

@@ -1,7 +1,15 @@
 import React from "react";
-import { ScrollView, StyleSheet, View, Image, Text } from "react-native";
+import {
+	ScrollView,
+	StyleSheet,
+	View,
+	Image,
+	Text,
+	AsyncStorage
+} from "react-native";
 import SafeAreaView from "react-native-safe-area-view";
 import { DrawerNavigatorItems } from "react-navigation-drawer";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 const CustomDrawerContentComponent = props => (
 	<ScrollView>
@@ -19,6 +27,34 @@ const CustomDrawerContentComponent = props => (
 				</Text>
 			</View>
 			<DrawerNavigatorItems {...props} />
+			<TouchableOpacity
+				onPress={async () => {
+					await AsyncStorage.removeItem("token");
+					props.navigation.navigate("Login");
+				}}
+				style={{ alignItems: "center", justifyContent: "center" }}
+			>
+				<View
+					style={{
+						width: "70%",
+						paddingTop: 10,
+						paddingBottom: 15,
+						borderBottomWidth: StyleSheet.hairlineWidth,
+						borderBottomColor: "#fff",
+						alignItems: "center",
+						justifyContent: "center"
+					}}
+				>
+					<Text
+						style={{
+							color: "#c9c9c9",
+							fontWeight: "bold"
+						}}
+					>
+						Logout
+					</Text>
+				</View>
+			</TouchableOpacity>
 		</SafeAreaView>
 	</ScrollView>
 );

@@ -8,7 +8,8 @@ import {
 	TextInput,
 	KeyboardAvoidingView,
 	View,
-	Keyboard
+	Keyboard,
+	AsyncStorage
 } from "react-native";
 import Constants from "expo-constants";
 import axios from "axios";
@@ -25,20 +26,29 @@ export default class LoginScreen extends React.Component {
 		email: "",
 		password: "",
 		isFormValid: false,
-		loggedIn: true
+		loggedIn: true,
+		api: this.props.screenProps.api
 	};
 
-	componentDidMount() {
-		const { manifest } = Constants;
-		const api =
-			typeof manifest.packagerOpts === `object` && manifest.packagerOpts.dev
-				? manifest.debuggerHost
-						.split(`:`)
-						.shift()
-						.concat(`:4000`)
-				: `api.example.com`;
-		this.setState({ api });
+	async componentDidMount() {
+		if (await this.retrieveData()) {
+			this.props.navigation.navigate("Home");
+		}
 	}
+
+	retrieveData = async () => {
+		try {
+			const value = await AsyncStorage.getItem("token");
+			if (value !== null) {
+				this.setState({ token: value });
+				return 1;
+			} else {
+				return 0;
+			}
+		} catch (error) {
+			console.log(error);
+		}
+	};
 
 	handleEmailChange = email => {
 		this.setState({ email: email });
@@ -67,7 +77,12 @@ export default class LoginScreen extends React.Component {
 		});
 
 		if (response.data.loggedIn) {
-			this.props.navigation.navigate("Home", { token: response.data.token });
+			try {
+				await AsyncStorage.setItem("token", response.data.token);
+			} catch (error) {
+				console.log(error);
+			}
+			this.props.navigation.navigate("Home");
 		} else {
 			this.setState({ loggedIn: response.data.loggedIn });
 		}
