@@ -16,24 +16,35 @@ import {
 import * as Permissions from "expo-permissions";
 import { Notifications } from "expo";
 import { BarCodeScanner } from "expo-barcode-scanner";
-import { ConfirmDialog, Dialog } from "react-native-simple-dialogs";
+import { Dialog } from "react-native-simple-dialogs";
 
-import { MonoText } from "../components/StyledText";
-
-export default class HomeScreen extends React.Component {
+class HomeScreen extends React.Component {
 	state = {
 		isScanning: false,
 		hasCameraPermission: null,
 		scanned: false,
 		dialogVisible: false,
+		noticeVisible: false,
 		revealSlot: false,
-		api: this.props.screenProps.api
+		api: this.props.screenProps.api,
+		notification: this.props.screenProps.notification
 	};
 
 	async componentDidMount() {
 		if (await this.retrieveData()) {
 			this.getRevealedSlots();
 			this.registerForPushNotificationsAsync();
+		}
+	}
+
+	componentDidUpdate(prevProps) {
+		if (
+			prevProps.screenProps.notification !== this.props.screenProps.notification
+		) {
+			this.setState({
+				notification: this.props.screenProps.notification,
+				noticeVisible: true
+			});
 		}
 	}
 
@@ -63,7 +74,7 @@ export default class HomeScreen extends React.Component {
 		// POST the token to your backend server from where you can retrieve it to send push notifications.
 		let response = await axios({
 			method: "get",
-			url: "http://" + this.state.api + "/deviceToken",
+			url: this.state.api + "/deviceToken",
 			headers: {
 				Authorization: "Bearer " + this.state.token
 			}
@@ -71,7 +82,7 @@ export default class HomeScreen extends React.Component {
 		if (response.data.devices.length) {
 			axios({
 				method: "post",
-				url: "http://" + this.state.api + "/deviceToken/update",
+				url: this.state.api + "/deviceToken/update",
 				headers: {
 					Authorization: "Bearer " + this.state.token
 				},
@@ -82,7 +93,7 @@ export default class HomeScreen extends React.Component {
 		} else {
 			axios({
 				method: "post",
-				url: "http://" + this.state.api + "/deviceToken/insert",
+				url: this.state.api + "/deviceToken/insert",
 				headers: {
 					Authorization: "Bearer " + this.state.token
 				},
@@ -110,7 +121,7 @@ export default class HomeScreen extends React.Component {
 	getRevealedSlots = async () => {
 		let response = await axios({
 			method: "post",
-			url: "http://" + this.state.api + "/slots/revealed",
+			url: this.state.api + "/slots/revealed",
 			headers: {
 				Authorization: "Bearer " + this.state.token
 			}
@@ -126,7 +137,7 @@ export default class HomeScreen extends React.Component {
 		let response = await axios.all([
 			axios({
 				method: "post",
-				url: "http://" + this.state.api + "/slots/reveal",
+				url: this.state.api + "/slots/reveal",
 				headers: {
 					Authorization: "Bearer " + this.state.token
 				},
@@ -136,7 +147,7 @@ export default class HomeScreen extends React.Component {
 			}),
 			axios({
 				method: "post",
-				url: "http://" + this.state.api + "/logs",
+				url: this.state.api + "/logs",
 				headers: { Authorization: "Bearer " + this.state.token },
 				data: { slot_id: this.state.revealedSlots.length + 1 }
 			})
@@ -147,7 +158,7 @@ export default class HomeScreen extends React.Component {
 	resetSlots = () => {
 		axios({
 			method: "get",
-			url: "http://" + this.state.api + "/slots/reset",
+			url: this.state.api + "/slots/reset",
 			headers: {
 				Authorization: "Bearer " + this.state.token
 			}
@@ -160,16 +171,19 @@ export default class HomeScreen extends React.Component {
 		this.setState({ hasCameraPermission: status === "granted" });
 	};
 
-	handleBarCodeScanned = () => {
-		this.revealSlot();
+	handleBarCodeScanned = ({ type, data }) => {
+		console.log(data);
+		if (data === "37546961849") {
+			this.revealSlot();
 
-		this.setState({
-			scanned: true,
-			isScanning: false,
-			hasCameraPermission: null,
-			showNotice: true,
-			dialogVisible: true
-		});
+			this.setState({
+				scanned: true,
+				isScanning: false,
+				hasCameraPermission: null,
+				showNotice: true,
+				dialogVisible: true
+			});
+		}
 	};
 
 	createSlotGrid = () => {
@@ -222,6 +236,49 @@ export default class HomeScreen extends React.Component {
 		} = this.state;
 		return (
 			<View style={styles.container}>
+				<Dialog
+					title={
+						typeof this.state.notification.data !== "undefined"
+							? this.state.notification.data.title
+							: ""
+					}
+					titleStyle={[styles.noticeTitle, { fontSize: 16 }]}
+					animationType="fade"
+					visible={this.state.noticeVisible}
+					onTouchOutside={() => {
+						this.setState({
+							noticeVisible: false
+						});
+					}}
+					contentStyle={{ alignItems: "center" }}
+					buttons={
+						<TouchableOpacity
+							onPress={() => {
+								this.setState({
+									noticeVisible: false
+								});
+							}}
+							style={styles.noticeFooter}
+						>
+							<Text style={styles.noticeTitle}>Close</Text>
+						</TouchableOpacity>
+					}
+				>
+					{typeof this.state.notification.data !== "undefined" && (
+						<View>
+							<View style={{ marginBottom: 10 }}>
+								<Text style={[styles.noticeTitle, { fontSize: 14 }]}>
+									{this.state.notification.data.subtitle}
+								</Text>
+							</View>
+							<View>
+								<Text style={{ fontSize: 12 }}>
+									{this.state.notification.data.msg}
+								</Text>
+							</View>
+						</View>
+					)}
+				</Dialog>
 				<Dialog
 					title=""
 					animationType="fade"
@@ -369,6 +426,8 @@ export default class HomeScreen extends React.Component {
 		);
 	}
 }
+
+export default HomeScreen;
 
 const styles = StyleSheet.create({
 	container: {

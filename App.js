@@ -1,7 +1,7 @@
-import { AppLoading } from "expo";
+import { AppLoading, Notifications } from "expo";
 import { Asset } from "expo-asset";
 import * as Font from "expo-font";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Platform, StatusBar, StyleSheet, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Constants from "expo-constants";
@@ -11,6 +11,15 @@ import AppNavigator from "./navigation/AppNavigator";
 export default function App(props) {
 	const [isLoadingComplete, setLoadingComplete] = useState(false);
 	const [api, setApi] = useState("");
+	const [notification, setNotification] = useState({});
+
+	useEffect(() => {
+		_handleNotification = notification => {
+			setNotification(notification);
+		};
+
+		_notificationSubscription = Notifications.addListener(_handleNotification);
+	});
 
 	if (!isLoadingComplete && !props.skipLoadingScreen) {
 		return (
@@ -24,7 +33,7 @@ export default function App(props) {
 		return (
 			<View style={styles.container}>
 				{Platform.OS === "ios" && <StatusBar barStyle="light-content" />}
-				<AppNavigator screenProps={{ api }} />
+				<AppNavigator screenProps={{ api, notification }} />
 			</View>
 		);
 	}
@@ -45,22 +54,18 @@ async function loadResourcesAsync(setApi) {
 			require("./assets/images/slotRevealed.png"),
 			require("./assets/images/happy.png")
 		]),
-		Font.loadAsync({
-			// This is the font that we are using for our tab bar
-			...Ionicons.font,
-			// We include SpaceMono because we use it in HomeScreen.js. Feel free to
-			// remove this if you are not using it in your app
-			"space-mono": require("./assets/fonts/SpaceMono-Regular.ttf")
-		})
+		Font.loadAsync({})
 	]);
 	const { manifest } = Constants;
 	const api =
 		typeof manifest.packagerOpts === `object` && manifest.packagerOpts.dev
-			? manifest.debuggerHost
+			? "http://" +
+			  manifest.debuggerHost
 					.split(`:`)
 					.shift()
 					.concat(`:4000`)
-			: `api.example.com`;
+			: `https://mercedeshairdressing.com/rewardMe`;
+	console.log(api);
 	setApi(api);
 }
 
@@ -71,7 +76,6 @@ function handleLoadingError(error) {
 }
 
 function handleFinishLoading(setLoadingComplete) {
-	console.log();
 	setLoadingComplete(true);
 }
 

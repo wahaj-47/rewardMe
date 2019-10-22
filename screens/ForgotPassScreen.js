@@ -12,12 +12,6 @@ import {
 	KeyboardAvoidingView,
 	View
 } from "react-native";
-{
-	/** 
-import { MonoText } from "../components/StyledText";
-
-*/
-}
 
 export default class ForgotPassScreen extends React.Component {
 	state = {

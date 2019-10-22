@@ -10,7 +10,6 @@ import {
 	View
 } from "react-native";
 
-import { MonoText } from "../components/StyledText";
 import { Linking } from "expo";
 
 export default function AboutScreen() {

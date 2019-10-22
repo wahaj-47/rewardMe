@@ -9,17 +9,12 @@ import {
 	KeyboardAvoidingView,
 	View,
 	Keyboard,
-	AsyncStorage
+	AsyncStorage,
+	ActivityIndicator
 } from "react-native";
 import Constants from "expo-constants";
 import axios from "axios";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-{
-	/** 
-import { MonoText } from "../components/StyledText";
-
-*/
-}
 
 export default class LoginScreen extends React.Component {
 	state = {
@@ -27,6 +22,7 @@ export default class LoginScreen extends React.Component {
 		password: "",
 		isFormValid: false,
 		loggedIn: true,
+		loginPressed: false,
 		api: this.props.screenProps.api
 	};
 
@@ -71,7 +67,9 @@ export default class LoginScreen extends React.Component {
 	handleLoginPress = async () => {
 		console.log("login button pressed");
 
-		let response = await axios.post("http://" + this.state.api + "/login", {
+		this.setState({ loginPressed: true });
+
+		let response = await axios.post(this.state.api + "/login", {
 			email: this.state.email,
 			password: this.state.password
 		});
@@ -84,7 +82,7 @@ export default class LoginScreen extends React.Component {
 			}
 			this.props.navigation.navigate("Home");
 		} else {
-			this.setState({ loggedIn: response.data.loggedIn });
+			this.setState({ loggedIn: response.data.loggedIn, loginPressed: false });
 		}
 	};
 
@@ -93,6 +91,7 @@ export default class LoginScreen extends React.Component {
 			<KeyboardAwareScrollView
 				contentContainerStyle={styles.container}
 				scrollEnabled={false}
+				enableOnAndroid={true}
 			>
 				<Image
 					style={styles.logo}
@@ -133,7 +132,11 @@ export default class LoginScreen extends React.Component {
 						style={styles.loginButton}
 						onPress={this.handleLoginPress}
 					>
-						<Text style={styles.loginText}>LOGIN</Text>
+						{this.state.loginPressed ? (
+							<ActivityIndicator></ActivityIndicator>
+						) : (
+							<Text style={styles.loginText}>LOGIN</Text>
+						)}
 					</TouchableOpacity>
 				</View>
 

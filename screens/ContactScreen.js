@@ -11,7 +11,6 @@ import {
 	Button
 } from "react-native";
 
-import { MonoText } from "../components/StyledText";
 import { Linking } from "expo";
 import Layout from "../constants/Layout";
 

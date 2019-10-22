@@ -16,12 +16,6 @@ import Layout from "../constants/Layout";
 import Constants from "expo-constants";
 import axios from "axios";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-{
-	/** 
-import { MonoText } from "../components/StyledText";
-
-*/
-}
 
 export default class SignUpScreen extends React.Component {
 	state = {
@@ -77,15 +71,12 @@ export default class SignUpScreen extends React.Component {
 
 	handleSignUpPress = async () => {
 		console.log("Signup button pressed");
-		let response = await axios.post(
-			"http://" + this.state.api + "/signUp/checkExisting",
-			{
-				email: this.state.email
-			}
-		);
+		let response = await axios.post(this.state.api + "/signUp/checkExisting", {
+			email: this.state.email
+		});
 
 		if (response.data.isEmailValid) {
-			let res = await axios.post("http://" + this.state.api + "/signUp", {
+			let res = await axios.post(this.state.api + "/signUp", {
 				name: this.state.name,
 				email: this.state.email,
 				password: this.state.password

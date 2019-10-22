@@ -13,7 +13,6 @@ import {
 	ActivityIndicator
 } from "react-native";
 
-import { MonoText } from "../components/StyledText";
 import { FlatList } from "react-native-gesture-handler";
 
 export default class LogScreen extends React.Component {
@@ -42,7 +41,7 @@ export default class LogScreen extends React.Component {
 	getLogs = async () => {
 		let response = await axios({
 			method: "get",
-			url: "http://" + this.state.api + "/logs",
+			url: this.state.api + "/logs",
 			headers: {
 				Authorization: "Bearer " + this.state.token
 			}
@@ -113,9 +112,7 @@ export default class LogScreen extends React.Component {
 										<Text style={styles.text}>You Saved {item.value}$</Text>
 									</View>
 									<View style={{ marginRight: 10 }}>
-										<Text style={styles.date}>
-											Date: {item.timestamp.split("T")[0]}
-										</Text>
+										<Text style={styles.date}>Date: {item.timestamp}</Text>
 									</View>
 								</View>
 							)}

@@ -68,7 +68,7 @@ INSERT INTO `device_tokens` (`user_id`, `device_token`) VALUES
 
 CREATE TABLE `logs` (
   `log_id` int(11) NOT NULL,
-  `timestamp` date NOT NULL DEFAULT current_timestamp(),
+  `timestamp` date NOT NULL,
   `value` int(11) NOT NULL,
   `user_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
