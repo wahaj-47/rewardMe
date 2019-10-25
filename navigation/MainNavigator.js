@@ -7,6 +7,7 @@ import AboutScreen from "../screens/AboutScreen";
 import NoticeScreen from "../screens/NoticeScreen";
 import LogScreen from "../screens/LogScreen";
 import ContactScreen from "../screens/ContactScreen";
+import PrivacyPolicyScreen from "../screens/PrivacyPolicyScreen";
 import SideBar from "../components/SideBar";
 
 const MainDrawerNavigator = createDrawerNavigator(
@@ -15,7 +16,8 @@ const MainDrawerNavigator = createDrawerNavigator(
 		About: AboutScreen,
 		Notice: NoticeScreen,
 		Log: LogScreen,
-		"Contact Us": ContactScreen
+		"Contact Us": ContactScreen,
+		"Privacy Policy": PrivacyPolicyScreen
 	},
 	{
 		contentComponent: SideBar,

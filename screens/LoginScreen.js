@@ -20,7 +20,6 @@ export default class LoginScreen extends React.Component {
 	state = {
 		email: "",
 		password: "",
-		isFormValid: false,
 		loggedIn: true,
 		loginPressed: false,
 		api: this.props.screenProps.api
@@ -48,20 +47,10 @@ export default class LoginScreen extends React.Component {
 
 	handleEmailChange = email => {
 		this.setState({ email: email });
-		if (this.state.email.length > 0 && this.state.password.length > 0) {
-			this.setState({ isFormValid: true });
-		} else {
-			this.setState({ isFormValid: false });
-		}
 	};
 
 	handlePasswordChange = password => {
 		this.setState({ password: password });
-		if (this.state.email.length > 0 && this.state.password.length > 0) {
-			this.setState({ isFormValid: true });
-		} else {
-			this.setState({ isFormValid: false });
-		}
 	};
 
 	handleLoginPress = async () => {
@@ -73,14 +62,35 @@ export default class LoginScreen extends React.Component {
 			email: this.state.email,
 			password: this.state.password
 		});
+		console.log(response.data);
+		console.log(response.data.isVerified);
 
-		if (response.data.loggedIn) {
+		if (response.data.loggedIn && response.data.isVerified) {
 			try {
 				await AsyncStorage.setItem("token", response.data.token);
 			} catch (error) {
 				console.log(error);
 			}
 			this.props.navigation.navigate("Home");
+		} else if (
+			!response.data.isVerified &&
+			typeof response.data.isVerified !== "undefined"
+		) {
+			this.setState({
+				loginPressed: false
+			});
+			let res = await axios.post(
+				this.state.api + "/signUp/sendVerificationEmail",
+				{
+					email: this.state.email
+				}
+			);
+			if (res.data.emailSent) {
+				this.setState({ loggedIn: true });
+				this.props.navigation.navigate("VerifyEmail", {
+					email: this.state.email
+				});
+			}
 		} else {
 			this.setState({ loggedIn: response.data.loggedIn, loginPressed: false });
 		}
@@ -112,6 +122,7 @@ export default class LoginScreen extends React.Component {
 					<TextInput
 						style={styles.textBox}
 						value={this.state.password}
+						secureTextEntry
 						onChangeText={this.handlePasswordChange}
 						placeholder="Password"
 						placeholderTextColor="#c9c9c9"
@@ -128,7 +139,9 @@ export default class LoginScreen extends React.Component {
 					)}
 
 					<TouchableOpacity
-						disabled={!this.state.isFormValid}
+						disabled={
+							!(this.state.email.length > 0 && this.state.password.length > 0)
+						}
 						style={styles.loginButton}
 						onPress={this.handleLoginPress}
 					>

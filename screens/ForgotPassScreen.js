@@ -10,24 +10,54 @@ import {
 	TextInput,
 	Button,
 	KeyboardAvoidingView,
-	View
+	View,
+	ActivityIndicator
 } from "react-native";
+import axios from "axios";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 export default class ForgotPassScreen extends React.Component {
 	state = {
+		api: this.props.screenProps.api,
+		isEmailIncorrect: false,
+		buttonPressed: false,
 		email: ""
 	};
 	handleEmailChange = email => {
 		this.setState({ email: email });
 	};
 
-	handleForgotPassPress = () => {
+	handleForgotPassPress = async () => {
 		console.log("Forgot pass button pressed");
+
+		this.setState({ buttonPressed: true });
+
+		let response = await axios.post(this.state.api + "/forgotPassword", {
+			email: this.state.email
+		});
+
+		console.log(response.data);
+
+		if (response.data.emailSent) {
+			this.setState({
+				buttonPressed: false,
+				isEmailIncorrect: false
+			});
+			this.props.navigation.navigate("ResetPassword", {
+				email: this.state.email
+			});
+		} else {
+			this.setState({ isEmailIncorrect: true, buttonPressed: false });
+		}
 	};
 
 	render() {
 		return (
-			<KeyboardAvoidingView style={styles.container} behavior="padding">
+			<KeyboardAwareScrollView
+				contentContainerStyle={styles.container}
+				scrollEnabled={false}
+				enableOnAndroid
+			>
 				<View style={styles.form}>
 					<View style={styles.headingContainer}>
 						<Text style={styles.mainHeading}>Forgot Password?</Text>
@@ -41,17 +71,27 @@ export default class ForgotPassScreen extends React.Component {
 							value={this.state.email}
 							onChangeText={this.handleEmailChange}
 							placeholder="Enter your email here"
+							autoCompleteType="email"
+							autoCapitalize="none"
+							keyboardType="email-address"
 						/>
+						{this.state.isEmailIncorrect && (
+							<Text style={{ color: "red", alignSelf: "center" }}>
+								This email is not registered
+							</Text>
+						)}
 					</View>
 
 					<TouchableOpacity
 						style={styles.signUpButton}
-						onPress={() => {
-							this.props.navigation.navigate("ResetPassword");
-							console.log("login button pressed");
-						}}
+						onPress={this.handleForgotPassPress}
+						disabled={this.state.email.length === 0}
 					>
-						<Text style={styles.signUpText}>Send Reset Email</Text>
+						{this.state.buttonPressed ? (
+							<ActivityIndicator></ActivityIndicator>
+						) : (
+							<Text style={styles.signUpText}>Send Reset Email</Text>
+						)}
 					</TouchableOpacity>
 				</View>
 
@@ -63,7 +103,7 @@ export default class ForgotPassScreen extends React.Component {
 				>
 					<Text style={styles.text}>Click here to Log in</Text>
 				</TouchableOpacity>
-			</KeyboardAvoidingView>
+			</KeyboardAwareScrollView>
 		);
 	}
 }

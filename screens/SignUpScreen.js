@@ -10,7 +10,8 @@ import {
 	TextInput,
 	Button,
 	KeyboardAvoidingView,
-	View
+	View,
+	ActivityIndicator
 } from "react-native";
 import Layout from "../constants/Layout";
 import Constants from "expo-constants";
@@ -58,18 +59,11 @@ export default class SignUpScreen extends React.Component {
 
 	handlePasswordChange = password => {
 		this.setState({ password: password });
-		if (
-			this.state.name.length > 0 &&
-			this.state.email.length > 0 &&
-			this.state.password.length > 6
-		) {
-			this.setState({ isFormValid: true });
-		} else {
-			this.setState({ isFormValid: false });
-		}
 	};
 
 	handleSignUpPress = async () => {
+		this.setState({ buttonPressed: true });
+
 		console.log("Signup button pressed");
 		let response = await axios.post(this.state.api + "/signUp/checkExisting", {
 			email: this.state.email
@@ -81,8 +75,20 @@ export default class SignUpScreen extends React.Component {
 				email: this.state.email,
 				password: this.state.password
 			});
+			console.log(res.data);
+			if (res.data.success) {
+				this.setState({ buttonPressed: false });
+				this.props.navigation.navigate("VerifyEmail", {
+					name: this.state.name,
+					email: this.state.email,
+					password: this.state.password
+				});
+			}
 		} else {
-			this.setState({ isEmailValid: response.data.isEmailValid });
+			this.setState({
+				isEmailValid: response.data.isEmailValid,
+				buttonPressed: false
+			});
 		}
 	};
 
@@ -91,6 +97,7 @@ export default class SignUpScreen extends React.Component {
 			<KeyboardAwareScrollView
 				contentContainerStyle={styles.container}
 				scrollEnabled={false}
+				enableOnAndroid
 			>
 				<View style={styles.form}>
 					<View style={styles.headingContainer}>
@@ -133,6 +140,7 @@ export default class SignUpScreen extends React.Component {
 							value={this.state.password}
 							onChangeText={this.handlePasswordChange}
 							placeholder="Enter your password here"
+							secureTextEntry
 						/>
 					</View>
 
@@ -147,11 +155,21 @@ export default class SignUpScreen extends React.Component {
 					)}
 
 					<TouchableOpacity
-						disabled={!this.state.isFormValid}
+						disabled={
+							!(
+								this.state.name.length > 0 &&
+								this.state.email.length > 0 &&
+								this.state.password.length > 7
+							)
+						}
 						style={styles.signUpButton}
 						onPress={this.handleSignUpPress}
 					>
-						<Text style={styles.signUpText}>SIGN UP</Text>
+						{this.state.buttonPressed ? (
+							<ActivityIndicator></ActivityIndicator>
+						) : (
+							<Text style={styles.signUpText}>SIGN UP</Text>
+						)}
 					</TouchableOpacity>
 				</View>
 

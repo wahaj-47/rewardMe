@@ -16,25 +16,20 @@ import {
 import axios from "axios";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
-export default class ResetPassScreen extends React.Component {
+export default class VerifyEmailScreen extends React.Component {
 	state = {
 		api: this.props.screenProps.api,
 		code: "",
 		password: "",
 		buttonPressed: false,
-		isCodeIncorrect: false
+		isCodeIncorrect: false,
+		name: this.props.navigation.getParam("name", ""),
+		email: this.props.navigation.getParam("email", ""),
+		password: this.props.navigation.getParam("password", "")
 	};
-
-	componentDidMount() {
-		this.setState({ email: this.props.navigation.getParam("email", "") });
-	}
 
 	handleCodeChange = code => {
 		this.setState({ code: code });
-	};
-
-	handlePasswordChange = password => {
-		this.setState({ password: password });
 	};
 
 	handleConfirm = async () => {
@@ -44,24 +39,22 @@ export default class ResetPassScreen extends React.Component {
 
 		this.setState({ buttonPressed: true });
 
-		let response = await axios.post(
-			this.state.api + "/forgotPassword/updatePassword",
-			{
-				email: this.state.email,
-				password: this.state.password,
-				verificationCode: this.state.code,
-				emailSent: false
-			}
-		);
+		let response = await axios.post(this.state.api + "/signUp/verifyEmail", {
+			email: this.state.email,
+			verificationCode: this.state.code
+		});
 
 		console.log(response.data);
 
-		if (response.data.passwordUpdated) {
+		if (response.data.emailVerified) {
 			this.setState({
 				buttonPressed: false,
-				isCodeIncorrect: false
+				isCodeIncorrect: false,
+				emailVerified: true
 			});
-			this.props.navigation.navigate("Login");
+			setTimeout(() => {
+				this.props.navigation.navigate("Login");
+			}, 2000);
 		} else {
 			this.setState({ isCodeIncorrect: true, buttonPressed: false });
 		}
@@ -76,7 +69,7 @@ export default class ResetPassScreen extends React.Component {
 			>
 				<View style={styles.form}>
 					<View style={styles.headingContainer}>
-						<Text style={styles.mainHeading}>New Password</Text>
+						<Text style={styles.mainHeading}>Verify Email</Text>
 						<Text style={styles.subHeading}>
 							The code has been sent to your email
 						</Text>
@@ -92,30 +85,14 @@ export default class ResetPassScreen extends React.Component {
 						/>
 					</View>
 
-					<View style={styles.subContainer}>
-						<Text style={styles.headings}>New Password</Text>
-						<TextInput
-							style={styles.textBox}
-							value={this.state.password}
-							secureTextEntry
-							onChangeText={this.handlePasswordChange}
-							placeholder="Enter your new password here"
-						/>
-					</View>
-
-					<Text style={[styles.text, { fontSize: 10, alignSelf: "center" }]}>
-						Password must be atleast 8 characters long
-					</Text>
-
 					<TouchableOpacity
 						style={styles.signUpButton}
 						onPress={this.handleConfirm}
-						disabled={this.state.password > 7 && this.state.code === 6}
 					>
 						{this.state.buttonPressed ? (
 							<ActivityIndicator></ActivityIndicator>
 						) : (
-							<Text style={styles.signUpText}>Confirm New Password</Text>
+							<Text style={styles.signUpText}>Verify Email</Text>
 						)}
 					</TouchableOpacity>
 				</View>
@@ -123,13 +100,15 @@ export default class ResetPassScreen extends React.Component {
 				<TouchableOpacity
 					onPress={async () => {
 						let response = await axios.post(
-							this.state.api + "/forgotPassword",
+							this.state.api + "/signUp/sendVerificationEmail",
 							{
-								email: this.state.email
+								name: this.state.name,
+								email: this.state.email,
+								password: this.state.password
 							}
 						);
 
-						if (response.data.emailSent) {
+						if (response.data.success) {
 							this.setState({ emailSent: true });
 							setTimeout(() => {
 								this.setState({ emailSent: false });
@@ -141,6 +120,16 @@ export default class ResetPassScreen extends React.Component {
 						Didn't receive the code? Click here to resend.
 					</Text>
 				</TouchableOpacity>
+				{this.state.emailVerified && (
+					<Text
+						style={[
+							styles.text,
+							{ fontSize: 10, alignSelf: "center", color: "green" }
+						]}
+					>
+						Email Verified
+					</Text>
+				)}
 				{this.state.emailSent && (
 					<Text style={[styles.text, { fontSize: 10, alignSelf: "center" }]}>
 						Verification code sent to email
