@@ -15,6 +15,8 @@ export default function App(props) {
 
 	useEffect(() => {
 		_handleNotification = notification => {
+			Notifications.setBadgeNumberAsync(1);
+
 			console.log(notification.data.msg);
 			setNotification(notification);
 		};

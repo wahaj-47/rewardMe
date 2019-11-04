@@ -11,6 +11,7 @@ import {
 
 import { FlatList } from "react-native-gesture-handler";
 import { Dialog } from "react-native-simple-dialogs";
+import { Notifications } from "expo";
 
 export default class NoticeScreen extends React.Component {
 	state = {
@@ -20,6 +21,8 @@ export default class NoticeScreen extends React.Component {
 
 	componentDidMount() {
 		this.props.navigation.addListener("didFocus", async () => {
+			Notifications.dismissAllNotificationsAsync();
+			Notifications.setBadgeNumberAsync(0);
 			if (await this.retrieveData()) this.getNotices();
 		});
 	}
