@@ -1,15 +1,9 @@
-import * as WebBrowser from "expo-web-browser";
 import React from "react";
 import {
-	Image,
-	Platform,
-	ScrollView,
 	StyleSheet,
 	Text,
 	TouchableOpacity,
 	TextInput,
-	Button,
-	KeyboardAvoidingView,
 	View,
 	ActivityIndicator
 } from "react-native";
@@ -104,7 +98,7 @@ export default class ResetPassScreen extends React.Component {
 					</View>
 
 					<Text style={[styles.text, { fontSize: 10, alignSelf: "center" }]}>
-						Password must be atleast 8 characters long
+						Password must be at least 8 characters long
 					</Text>
 
 					<TouchableOpacity

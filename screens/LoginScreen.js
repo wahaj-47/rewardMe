@@ -1,4 +1,3 @@
-import * as WebBrowser from "expo-web-browser";
 import React from "react";
 import {
 	Image,
@@ -6,13 +5,10 @@ import {
 	Text,
 	TouchableOpacity,
 	TextInput,
-	KeyboardAvoidingView,
 	View,
-	Keyboard,
 	AsyncStorage,
 	ActivityIndicator
 } from "react-native";
-import Constants from "expo-constants";
 import axios from "axios";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
@@ -68,6 +64,7 @@ export default class LoginScreen extends React.Component {
 		if (response.data.loggedIn && response.data.isVerified) {
 			try {
 				await AsyncStorage.setItem("token", response.data.token);
+				await AsyncStorage.setItem("name", response.data.name);
 			} catch (error) {
 				console.log(error);
 			}
@@ -115,9 +112,11 @@ export default class LoginScreen extends React.Component {
 						onChangeText={this.handleEmailChange}
 						placeholder="Email"
 						placeholderTextColor="#c9c9c9"
-						autoCompleteType="email"
+						autoCompleteType="off"
 						autoCapitalize="none"
 						keyboardType="email-address"
+						blurOnSubmit={false}
+						// selectionColor="#c9c9c9"
 					/>
 					<TextInput
 						style={styles.textBox}
@@ -126,8 +125,9 @@ export default class LoginScreen extends React.Component {
 						onChangeText={this.handlePasswordChange}
 						placeholder="Password"
 						placeholderTextColor="#c9c9c9"
-						autoCompleteType="password"
+						autoCompleteType="off"
 						autoCapitalize="none"
+						blurOnSubmit={false}
 					/>
 
 					{!this.state.loggedIn ? (
@@ -217,7 +217,8 @@ const styles = StyleSheet.create({
 		borderBottomWidth: StyleSheet.hairlineWidth,
 		borderBottomColor: "white",
 		paddingVertical: 5,
-		marginVertical: 5
+		marginVertical: 5,
+		backgroundColor: "transparent"
 	},
 	logo: {
 		height: 150,

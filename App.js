@@ -1,30 +1,35 @@
 import { AppLoading, Notifications } from "expo";
 import { Asset } from "expo-asset";
-import * as Font from "expo-font";
 import React, { useState, useEffect } from "react";
 import { Platform, StatusBar, StyleSheet, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import Constants from "expo-constants";
+import * as Font from "expo-font";
 
 import AppNavigator from "./navigation/AppNavigator";
 
 export default function App(props) {
 	const [isLoadingComplete, setLoadingComplete] = useState(false);
 	const [api, setApi] = useState("");
+	const [appVersion, setVersion] = useState("");
 	const [notification, setNotification] = useState({});
 
 	useEffect(() => {
 		_handleNotification = notification => {
+			console.log(notification.data.msg);
 			setNotification(notification);
 		};
 
 		_notificationSubscription = Notifications.addListener(_handleNotification);
+
+		return function cleanup() {
+			_notificationSubscription.remove();
+		};
 	});
 
 	if (!isLoadingComplete && !props.skipLoadingScreen) {
 		return (
 			<AppLoading
-				startAsync={() => loadResourcesAsync(setApi)}
+				startAsync={() => loadResourcesAsync(setApi, setVersion)}
 				onError={handleLoadingError}
 				onFinish={() => handleFinishLoading(setLoadingComplete)}
 			/>
@@ -33,13 +38,13 @@ export default function App(props) {
 		return (
 			<View style={styles.container}>
 				{Platform.OS === "ios" && <StatusBar barStyle="light-content" />}
-				<AppNavigator screenProps={{ api, notification }} />
+				<AppNavigator screenProps={{ api, notification, appVersion }} />
 			</View>
 		);
 	}
 }
 
-async function loadResourcesAsync(setApi) {
+async function loadResourcesAsync(setApi, setVersion) {
 	await Promise.all([
 		Asset.loadAsync([
 			require("./assets/images/Logo/logo.png"),
@@ -52,21 +57,29 @@ async function loadResourcesAsync(setApi) {
 			require("./assets/images/qrcode.png"),
 			require("./assets/images/slotUnrevealed.png"),
 			require("./assets/images/slotRevealed.png"),
-			require("./assets/images/happy.png")
+			require("./assets/images/happy.png"),
+			require("./assets/images/checkMark.png"),
+			require("./assets/images/delete.png"),
+			require("./assets/sounds/qrcode.wav"),
+			require("./assets/sounds/coin.wav")
 		]),
-		Font.loadAsync({})
+		Font.loadAsync({
+			footlight: require("./assets/fonts/footlight.ttf")
+		})
 	]);
 	const { manifest } = Constants;
+	const appVersion = manifest.version;
 	const api =
 		typeof manifest.packagerOpts === `object` && manifest.packagerOpts.dev
 			? "http://" +
 			  manifest.debuggerHost
 					.split(`:`)
 					.shift()
-					.concat(`:4000`)
+					.concat(`:4000/rewardMe`)
 			: `https://mercedeshairdressing.com/rewardMe`;
 	console.log(api);
 	setApi(api);
+	setVersion(appVersion);
 }
 
 function handleLoadingError(error) {

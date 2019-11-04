@@ -1,20 +1,12 @@
-import * as WebBrowser from "expo-web-browser";
 import React from "react";
 import {
-	Image,
-	Platform,
-	ScrollView,
 	StyleSheet,
 	Text,
 	TouchableOpacity,
 	TextInput,
-	Button,
-	KeyboardAvoidingView,
 	View,
 	ActivityIndicator
 } from "react-native";
-import Layout from "../constants/Layout";
-import Constants from "expo-constants";
 import axios from "axios";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
@@ -24,7 +16,8 @@ export default class SignUpScreen extends React.Component {
 		email: "",
 		password: "",
 		isFormValid: false,
-		isEmailValid: true
+		isEmailValid: true,
+		isEmailIncorrect: false
 	};
 
 	componentDidMount() {
@@ -62,33 +55,41 @@ export default class SignUpScreen extends React.Component {
 	};
 
 	handleSignUpPress = async () => {
+		let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 		this.setState({ buttonPressed: true });
 
-		console.log("Signup button pressed");
-		let response = await axios.post(this.state.api + "/signUp/checkExisting", {
-			email: this.state.email
-		});
+		if (reg.test(this.state.email) === false) {
+			this.setState({ isEmailIncorrect: true, buttonPressed: false });
+		} else {
+			console.log("Signup button pressed");
+			let response = await axios.post(
+				this.state.api + "/signUp/checkExisting",
+				{
+					email: this.state.email
+				}
+			);
 
-		if (response.data.isEmailValid) {
-			let res = await axios.post(this.state.api + "/signUp", {
-				name: this.state.name,
-				email: this.state.email,
-				password: this.state.password
-			});
-			console.log(res.data);
-			if (res.data.success) {
-				this.setState({ buttonPressed: false });
-				this.props.navigation.navigate("VerifyEmail", {
+			if (response.data.isEmailValid) {
+				let res = await axios.post(this.state.api + "/signUp", {
 					name: this.state.name,
 					email: this.state.email,
 					password: this.state.password
 				});
+				console.log(res.data);
+				if (res.data.success) {
+					this.setState({ buttonPressed: false });
+					this.props.navigation.navigate("VerifyEmail", {
+						name: this.state.name,
+						email: this.state.email,
+						password: this.state.password
+					});
+				}
+			} else {
+				this.setState({
+					isEmailValid: response.data.isEmailValid,
+					buttonPressed: false
+				});
 			}
-		} else {
-			this.setState({
-				isEmailValid: response.data.isEmailValid,
-				buttonPressed: false
-			});
 		}
 	};
 
@@ -145,12 +146,18 @@ export default class SignUpScreen extends React.Component {
 					</View>
 
 					<Text style={[styles.text, { fontSize: 10, alignSelf: "center" }]}>
-						Password must be atleast 8 characters long
+						Password must be at least 8 characters long
 					</Text>
 
 					{!this.state.isEmailValid && (
 						<Text style={{ color: "red", fontSize: 10, alignSelf: "center" }}>
 							Email already in use
+						</Text>
+					)}
+
+					{this.state.isEmailIncorrect && (
+						<Text style={{ color: "red", fontSize: 10, alignSelf: "center" }}>
+							Invalid Email
 						</Text>
 					)}
 

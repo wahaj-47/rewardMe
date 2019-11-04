@@ -1,10 +1,7 @@
-import * as WebBrowser from "expo-web-browser";
 import React from "react";
 import axios from "axios";
 import {
 	Image,
-	Platform,
-	ScrollView,
 	StyleSheet,
 	Text,
 	TouchableOpacity,
@@ -35,8 +32,10 @@ export default class NoticeScreen extends React.Component {
 				Authorization: "Bearer " + this.state.token
 			}
 		});
-		let notices = response.data.results[0].concat(response.data.results[1]);
-		this.setState({ notices });
+		if (typeof response.data.results !== "undefined") {
+			let notices = response.data.results[0].concat(response.data.results[1]);
+			this.setState({ notices });
+		}
 	};
 
 	retrieveData = async () => {
@@ -70,19 +69,7 @@ export default class NoticeScreen extends React.Component {
 							noticeVisible: false
 						});
 					}}
-					contentStyle={{ alignItems: "center" }}
-					buttons={
-						<TouchableOpacity
-							onPress={() => {
-								this.setState({
-									noticeVisible: false
-								});
-							}}
-							style={styles.noticeFooter}
-						>
-							<Text style={styles.noticeTitle}>Close</Text>
-						</TouchableOpacity>
-					}
+					contentStyle={{ alignItems: "stretch" }}
 				>
 					{typeof this.state.notice !== "undefined" && (
 						<View>
@@ -92,10 +79,23 @@ export default class NoticeScreen extends React.Component {
 								</Text>
 							</View>
 							<View>
-								<Text style={{ fontSize: 12 }}>{this.state.notice.msg}</Text>
+								<Text style={{ fontSize: 12, textAlign: "center" }}>
+									{this.state.notice.msg}
+								</Text>
 							</View>
 						</View>
 					)}
+					<View style={styles.noticeFooter}>
+						<TouchableOpacity
+							onPress={() => {
+								this.setState({
+									noticeVisible: false
+								});
+							}}
+						>
+							<Text style={styles.noticeTitle}>Close</Text>
+						</TouchableOpacity>
+					</View>
 				</Dialog>
 				{typeof this.state.notices !== "undefined" &&
 				this.state.notices.length ? (
@@ -166,7 +166,9 @@ const styles = StyleSheet.create({
 		textAlign: "center"
 	},
 	noticeFooter: {
-		paddingVertical: 15,
+		alignItems: "center",
+		marginTop: 15,
+		paddingTop: 20,
 		borderTopColor: "#1f1f1f",
 		borderTopWidth: StyleSheet.hairlineWidth
 	}

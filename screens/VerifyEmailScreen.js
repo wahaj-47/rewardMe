@@ -1,15 +1,9 @@
-import * as WebBrowser from "expo-web-browser";
 import React from "react";
 import {
-	Image,
-	Platform,
-	ScrollView,
 	StyleSheet,
 	Text,
 	TouchableOpacity,
 	TextInput,
-	Button,
-	KeyboardAvoidingView,
 	View,
 	ActivityIndicator
 } from "react-native";

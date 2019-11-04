@@ -1,4 +1,3 @@
-import * as WebBrowser from "expo-web-browser";
 import React from "react";
 import axios from "axios";
 
@@ -11,12 +10,110 @@ import {
 	View,
 	ImageBackground,
 	ActivityIndicator,
-	AsyncStorage
+	AsyncStorage,
+	Vibration,
+	Animated,
+	Easing,
+	BackHandler
 } from "react-native";
+import { TouchableHighlight } from "react-native-gesture-handler";
+import { Asset } from "expo-asset";
+import { Audio } from "expo-av";
 import * as Permissions from "expo-permissions";
 import { Notifications } from "expo";
+import { Camera } from "expo-camera";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import { Dialog } from "react-native-simple-dialogs";
+import { ProgressDialog } from "react-native-simple-dialogs";
+import Constants from "../constants/Layout";
+
+class WiggleView extends React.Component {
+	state = { rotation: new Animated.Value(0) };
+
+	componentDidMount() {
+		Animated.sequence([
+			Animated.timing(
+				// Animate over time
+				this.state.rotation, // The animated value to drive
+				{
+					toValue: 0.25, // Animate to opacity: 1 (opaque)
+					duration: 200 // Make it take a while
+				}
+			),
+			Animated.timing(
+				// Animate over time
+				this.state.rotation, // The animated value to drive
+				{
+					toValue: 0.5, // Animate to opacity: 1 (opaque)
+					duration: 200 // Make it take a while
+				}
+			),
+			Animated.timing(
+				// Animate over time
+				this.state.rotation, // The animated value to drive
+				{
+					toValue: 0.75, // Animate to opacity: 1 (opaque)
+					duration: 200 // Make it take a while
+				}
+			),
+			Animated.timing(
+				// Animate over time
+				this.state.rotation, // The animated value to drive
+				{
+					toValue: 1, // Animate to opacity: 1 (opaque)
+					duration: 200 // Make it take a while
+				}
+			)
+		]).start(); // Starts the animation
+	}
+
+	render() {
+		const { scale, rotation } = this.state;
+		const spin = rotation.interpolate({
+			inputRange: [0, 0.25, 0.5, 0.75, 1],
+			outputRange: ["0deg", "10deg", "-10deg", "10deg", "0deg"]
+		});
+		return (
+			<Animated.View
+				style={{
+					transform: [{ rotate: spin }]
+				}}
+			>
+				{this.props.children}
+			</Animated.View>
+		);
+	}
+}
+
+class ElasticView extends React.Component {
+	state = { scale: new Animated.Value(0) };
+
+	componentDidMount() {
+		Animated.timing(
+			// Animate over time
+			this.state.scale, // The animated value to drive
+			{
+				toValue: 1, // Animate to opacity: 1 (opaque)
+				easing: Easing.elastic(2),
+				duration: 1000 // Make it take a while
+			}
+		).start(); // Starts the animation
+	}
+
+	render() {
+		const { scale } = this.state;
+
+		return (
+			<Animated.View
+				style={{
+					transform: [{ scale: scale }]
+				}}
+			>
+				{this.props.children}
+			</Animated.View>
+		);
+	}
+}
 
 class HomeScreen extends React.Component {
 	state = {
@@ -27,10 +124,29 @@ class HomeScreen extends React.Component {
 		noticeVisible: false,
 		revealSlot: false,
 		api: this.props.screenProps.api,
-		notification: this.props.screenProps.notification
+		notification: this.props.screenProps.notification,
+		appVersion: this.props.screenProps.appVersion
 	};
 
 	async componentDidMount() {
+		this.backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
+			if (this.state.isScanning) {
+				this.setState({
+					isScanning: false,
+					hasCameraPermission: null,
+					scanned: false
+				});
+				return true;
+			}
+		});
+		this.props.navigation.addListener("didFocus", async () => {
+			this.setState({
+				scanned: true,
+				isScanning: false,
+				hasCameraPermission: null
+			});
+			this.getRevealedSlots();
+		});
 		if (await this.retrieveData()) {
 			this.getRevealedSlots();
 			this.registerForPushNotificationsAsync();
@@ -126,10 +242,27 @@ class HomeScreen extends React.Component {
 				Authorization: "Bearer " + this.state.token
 			}
 		});
-		if (response.data.slots.length === 10) {
-			this.resetSlots();
-		} else {
-			this.setState({ revealedSlots: response.data.slots });
+		if (typeof response.data.slots !== "undefined") {
+			if (response.data.slots.length === 8) {
+				this.setState({
+					revealedSlots: response.data.slots,
+					allowScan: response.data.allowScan
+				});
+				if (!this.state.dialogVisible) {
+					setTimeout(() => {
+						this.setState({ progressVisible: true });
+					}, 2000);
+					setTimeout(() => {
+						this.resetSlots();
+						this.setState({ progressVisible: false });
+					}, 4000);
+				}
+			} else {
+				this.setState({
+					revealedSlots: response.data.slots,
+					allowScan: response.data.allowScan
+				});
+			}
 		}
 	};
 
@@ -171,47 +304,54 @@ class HomeScreen extends React.Component {
 		this.setState({ hasCameraPermission: status === "granted" });
 	};
 
-	handleBarCodeScanned = ({ type, data }) => {
+	handleBarCodeScanned = async ({ type, data }) => {
 		console.log(data);
 		if (data === "37546961849") {
-			this.revealSlot();
-
+			if (this.state.scanned) return;
 			this.setState({
+				hasCameraPermission: null,
 				scanned: true,
 				isScanning: false,
-				hasCameraPermission: null,
 				showNotice: true,
 				dialogVisible: true
 			});
+			Vibration.vibrate(500);
+			const soundObject = new Audio.Sound();
+			try {
+				await soundObject.loadAsync(require("../assets/sounds/qrcode.wav"));
+				await soundObject.playAsync();
+			} catch {
+				console.log("Error loading qr audio");
+			}
+			this.revealSlot();
 		}
 	};
 
 	createSlotGrid = () => {
 		const slotRows = [];
-		for (let i = 0, l = 0, k = 4; i < 3; i++) {
-			if (i > 1) {
-				k = 2;
-			}
+		for (let i = 0, l = 0, k = 4; i < 2; i++) {
 			let slots = [];
 			for (let j = 0; j < k; j++) {
 				slots.push(
 					typeof this.state.revealedSlots[l] !== "undefined" ? (
 						<ImageBackground
 							key={l}
-							source={require("../assets/images/slotRevealed.png")}
+							source={Asset.fromModule(
+								require("../assets/images/checkMark.png")
+							)}
 							style={styles.slot}
-						>
-							<Text style={styles.slotValue}>
-								{this.state.revealedSlots[l].slot_value}$
-							</Text>
-						</ImageBackground>
+						></ImageBackground>
 					) : (
 						<ImageBackground
 							key={l}
-							source={require("../assets/images/slotUnrevealed.png")}
+							source={Asset.fromModule(
+								require("../assets/images/slotUnrevealed.png")
+							)}
 							style={styles.slot}
 						>
-							<Text style={styles.slotValue}>{l + 1}</Text>
+							<Text style={[styles.slotValue, { color: "white" }]}>
+								{l + 1}
+							</Text>
 						</ImageBackground>
 					)
 				);
@@ -236,6 +376,12 @@ class HomeScreen extends React.Component {
 		} = this.state;
 		return (
 			<View style={styles.container}>
+				<ProgressDialog
+					titleStyle={{ textAlign: "center" }}
+					visible={this.state.progressVisible}
+					title="Thank You For Your Loyalty"
+					message="Resetting the slots..."
+				/>
 				<Dialog
 					title={
 						typeof this.state.notification.data !== "undefined"
@@ -250,19 +396,7 @@ class HomeScreen extends React.Component {
 							noticeVisible: false
 						});
 					}}
-					contentStyle={{ alignItems: "center" }}
-					buttons={
-						<TouchableOpacity
-							onPress={() => {
-								this.setState({
-									noticeVisible: false
-								});
-							}}
-							style={styles.noticeFooter}
-						>
-							<Text style={styles.noticeTitle}>Close</Text>
-						</TouchableOpacity>
-					}
+					contentStyle={{ alignItems: "stretch" }}
 				>
 					{typeof this.state.notification.data !== "undefined" && (
 						<View>
@@ -272,16 +406,28 @@ class HomeScreen extends React.Component {
 								</Text>
 							</View>
 							<View>
-								<Text style={{ fontSize: 12 }}>
+								<Text style={{ fontSize: 12, textAlign: "center" }}>
 									{this.state.notification.data.msg}
 								</Text>
 							</View>
 						</View>
 					)}
+					<View style={styles.noticeFooter}>
+						<TouchableOpacity
+							onPress={() => {
+								this.setState({
+									noticeVisible: false
+								});
+							}}
+						>
+							<Text style={styles.noticeTitle}>Close</Text>
+						</TouchableOpacity>
+					</View>
 				</Dialog>
 				<Dialog
 					title=""
 					animationType="fade"
+					dialogStyle={{ backgroundColor: "white" }}
 					visible={dialogVisible}
 					onTouchOutside={() => {
 						if (revealSlot) {
@@ -292,129 +438,267 @@ class HomeScreen extends React.Component {
 							});
 						}
 					}}
-					contentStyle={{ alignItems: "center" }}
-					buttons={
-						!revealSlot ? (
-							<View style={styles.noticeFooter}>
-								<Text style={styles.noticeTitle}>
-									Earn Surprise Cash{" "}
-									<Text style={{ color: "#61DEFF" }}>Discounts</Text>
-								</Text>
-							</View>
-						) : (
-							<TouchableOpacity
-								onPress={() => {
-									this.getRevealedSlots();
-									this.setState({
-										dialogVisible: false,
-										revealSlot: false
-									});
-								}}
-								style={styles.noticeFooter}
-							>
-								<Text style={styles.noticeTitle}>Close</Text>
-							</TouchableOpacity>
-						)
-					}
+					contentStyle={{ alignItems: "stretch" }}
 				>
 					{!revealSlot ? (
 						<View>
-							<View style={{ marginBottom: 10 }}>
-								<Text style={[styles.noticeTitle, { marginBottom: 5 }]}>
-									Thanks For Visiting Us
-								</Text>
-								<Text style={styles.noticeTitle}>
-									We'd like to <Text style={{ color: "red" }}>reward</Text> your
-									loyalty
-								</Text>
-							</View>
-							<TouchableOpacity
-								onPress={() => this.setState({ revealSlot: true })}
-							>
-								<ImageBackground
-									source={require("../assets/images/slotUnrevealed.png")}
+							<View>
+								<View style={{ marginBottom: 10 }}>
+									<Text style={[styles.noticeTitle, { marginBottom: 5 }]}>
+										Thanks For Visiting Us
+									</Text>
+									<Text style={styles.noticeTitle}>
+										We'd like to <Text style={{ color: "red" }}>reward</Text>{" "}
+										your loyalty
+									</Text>
+								</View>
+								<TouchableOpacity
 									style={{
+										alignItems: "center",
+										justifyContent: "center",
 										width: 150,
 										height: 150,
-										alignSelf: "center",
-										alignItems: "center",
-										justifyContent: "center"
+										alignSelf: "center"
+									}}
+									onPress={async () => {
+										const coinSound = new Audio.Sound();
+										try {
+											await coinSound.loadAsync(
+												require("../assets/sounds/coin.wav")
+											);
+											await coinSound.playAsync();
+										} catch {
+											console.log("Error loading coin audio");
+										}
+
+										this.setState({ revealSlot: true });
 									}}
 								>
-									<Text style={[styles.noticeTitle, { color: "#61DEFF" }]}>
-										Scratch Me
-									</Text>
-								</ImageBackground>
-							</TouchableOpacity>
+									<ImageBackground
+										source={Asset.fromModule(
+											require("../assets/images/slotUnrevealed.png")
+										)}
+										style={{
+											width: 150,
+											height: 150,
+											alignSelf: "center",
+											alignItems: "center",
+											justifyContent: "center"
+										}}
+									>
+										<Text style={[styles.noticeTitle, { color: "#61DEFF" }]}>
+											Scratch Me
+										</Text>
+									</ImageBackground>
+								</TouchableOpacity>
+							</View>
+
+							<View style={styles.noticeFooter}>
+								<Text style={styles.noticeTitle}>
+									Earn Surprise Cash{" "}
+									<Text style={{ color: "red" }}>Discounts</Text>
+								</Text>
+							</View>
 						</View>
 					) : (
 						<View>
 							<View style={{ marginBottom: 10 }}>
-								<Text
-									style={[
-										styles.noticeTitle,
-										{ color: "red", fontSize: 22, marginBottom: 5 }
-									]}
-								>
-									Congrats !
-								</Text>
+								<WiggleView>
+									<Text
+										style={[
+											styles.noticeTitle,
+											{
+												color: "red",
+												fontSize: 22,
+												marginBottom: 5
+											}
+										]}
+									>
+										Congrats !
+									</Text>
+								</WiggleView>
 								<Text style={styles.noticeTitle}>You have just saved</Text>
 							</View>
-							<ImageBackground
-								source={require("../assets/images/slotRevealed.png")}
-								style={{
-									width: 150,
-									height: 150,
-									alignSelf: "center",
-									alignItems: "center",
-									justifyContent: "center"
-								}}
-							>
-								<Text style={[styles.noticeTitle, { fontSize: 30 }]}>
-									{this.state.revealedSlot.slot_value}$
-								</Text>
-							</ImageBackground>
+							{typeof this.state.revealedSlot !== "undefined" ? (
+								<ElasticView>
+									<ImageBackground
+										source={Asset.fromModule(
+											require("../assets/images/slotRevealed.png")
+										)}
+										style={{
+											width: 150,
+											height: 150,
+											alignSelf: "center",
+											alignItems: "center",
+											justifyContent: "center"
+										}}
+									>
+										<Text
+											style={[
+												styles.noticeTitle,
+												{ fontSize: 30, color: "#1f1f1f" }
+											]}
+										>
+											${this.state.revealedSlot.slot_value}
+										</Text>
+									</ImageBackground>
+								</ElasticView>
+							) : (
+								<View>
+									<ActivityIndicator size="large" color="#61DEFF" />
+								</View>
+							)}
+							<View style={styles.noticeFooter}>
+								<TouchableOpacity
+									onPress={() => {
+										this.getRevealedSlots();
+										this.setState({
+											dialogVisible: false,
+											revealSlot: false,
+											revealedSlot: undefined
+										});
+									}}
+								>
+									<Text style={styles.noticeTitle}>Close</Text>
+								</TouchableOpacity>
+							</View>
 						</View>
 					)}
 				</Dialog>
 				{(isScanning && hasCameraPermission !== false) ||
 				hasCameraPermission !== null ? (
-					<View style={{ width: 180, height: 180, marginVertical: 10 }}>
-						<BarCodeScanner
+					<View
+						style={{
+							position: "absolute",
+							top: 5,
+							left: 15,
+							width: Constants.window.width - 30,
+							height: Constants.window.height - 100,
+							marginVertical: 10,
+							zIndex: 1,
+							overflow: "hidden"
+						}}
+					>
+						<Camera
+							barCodeSettings={{
+								barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr]
+							}}
 							onBarCodeScanned={scanned ? undefined : this.handleBarCodeScanned}
-							style={StyleSheet.absoluteFillObject}
-						/>
+							style={[
+								{ justifyContent: "space-between" },
+								StyleSheet.absoluteFillObject
+							]}
+						>
+							<View
+								style={{
+									backgroundColor: "white",
+									alignSelf: "stretch",
+									padding: 20,
+									zIndex: 1
+								}}
+							>
+								<Text style={{ textAlign: "center" }}>
+									Scan the QR code to receive surprise Discounts
+								</Text>
+							</View>
+							<View
+								style={[
+									StyleSheet.absoluteFillObject,
+									{
+										borderColor: "rgba(0,0,0,0.5)",
+										borderWidth: 50,
+										borderTopWidth: 140,
+										borderBottomWidth: 140,
+										zIndex: 0
+									}
+								]}
+							></View>
+							<TouchableOpacity
+								style={{
+									backgroundColor: "white",
+									alignSelf: "stretch",
+									padding: 20
+								}}
+								onPress={() => {
+									this.setState({
+										isScanning: false,
+										hasCameraPermission: null,
+										scanned: false
+									});
+								}}
+							>
+								<Text
+									style={{
+										fontWeight: "bold",
+										fontSize: 20,
+										textAlign: "center"
+									}}
+								>
+									Stop Scanning
+								</Text>
+							</TouchableOpacity>
+						</Camera>
 					</View>
 				) : (
-					<View style={{ marginVertical: 10 }}>
+					<View style={{ marginVertical: 5 }}>
 						<Image
-							style={{ height: 180, width: 180 }}
-							source={require("../assets/images/qrcode.png")}
+							style={{ height: 130, width: 130 }}
+							source={Asset.fromModule(require("../assets/images/qrcode.png"))}
 						></Image>
 					</View>
 				)}
-				<TouchableOpacity
+				<Text
 					style={{
-						backgroundColor: "#1f1f1f",
-						flexDirection: "row",
-						alignItems: "center",
-						borderRadius: 25,
-						paddingVertical: 5,
-						paddingHorizontal: 20
+						marginVertical: 5,
+						marginBottom: 10,
+						color: "#c9c9c9",
+						fontSize: 12
+					}}
+				>
+					Receive Surprise Discounts On Each Visit
+				</Text>
+				<TouchableHighlight
+					disabled={!this.state.allowScan}
+					underlayColor="transparent"
+					onShowUnderlay={() => {
+						this.setState({ scanPressed: true });
+					}}
+					onHideUnderlay={() => {
+						this.setState({ scanPressed: false });
 					}}
 					onPress={async () => {
 						this.setState({ isScanning: true, scanned: false });
 						this.getPermissionsAsync();
 					}}
 				>
-					<Image
-						source={require("../assets/images/camera.png")}
-						style={{ height: 30, width: 30 }}
-					></Image>
-					<Text style={[styles.text, { marginLeft: 5, fontWeight: "700" }]}>
-						Scan
-					</Text>
-				</TouchableOpacity>
+					<View
+						style={{
+							backgroundColor: "#1f1f1f",
+							flexDirection: "row",
+							alignItems: "center",
+							borderRadius: 25,
+							paddingVertical: 5,
+							paddingHorizontal: 20
+						}}
+					>
+						<Image
+							source={Asset.fromModule(require("../assets/images/camera.png"))}
+							style={[
+								{ height: 30, width: 30 },
+								this.state.scanPressed && { tintColor: "#61DEFF" }
+							]}
+						></Image>
+						<Text
+							style={[
+								styles.text,
+								{ marginLeft: 5, fontWeight: "700" },
+								this.state.scanPressed && { color: "#61DEFF" }
+							]}
+						>
+							Scan
+						</Text>
+					</View>
+				</TouchableHighlight>
 				<View style={{ marginVertical: 10 }}>
 					{typeof this.state.revealedSlots === "undefined" ? (
 						<ActivityIndicator size="large" color="#61DEFF" />
@@ -422,6 +706,20 @@ class HomeScreen extends React.Component {
 						this.createSlotGrid()
 					)}
 				</View>
+				<Text style={{ color: "#c9c9c9", fontSize: 12 }}>
+					All Slots Will Reset After Your 8th Visit
+				</Text>
+				<Text
+					style={{
+						color: "#c9c9c9",
+						fontSize: 10,
+						position: "absolute",
+						bottom: 15,
+						alignItems: "center"
+					}}
+				>
+					v {this.state.appVersion}
+				</Text>
 			</View>
 		);
 	}
@@ -431,7 +729,7 @@ export default HomeScreen;
 
 const styles = StyleSheet.create({
 	container: {
-		justifyContent: "center",
+		padding: 10,
 		alignItems: "center",
 		flex: 1,
 		backgroundColor: "#000"
@@ -443,7 +741,9 @@ const styles = StyleSheet.create({
 		textAlign: "center"
 	},
 	noticeFooter: {
-		paddingVertical: 15,
+		alignItems: "center",
+		marginTop: 15,
+		paddingTop: 20,
 		borderTopColor: "#1f1f1f",
 		borderTopWidth: StyleSheet.hairlineWidth
 	},
@@ -463,7 +763,7 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "center"
 	},
-	slotValue: { color: "#fff", fontSize: 15, fontWeight: "bold" },
+	slotValue: { color: "#1f1f1f", fontSize: 15, fontWeight: "bold" },
 	developmentModeText: {
 		marginBottom: 20,
 		color: "rgba(0,0,0,0.4)",

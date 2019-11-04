@@ -1,10 +1,7 @@
-import * as WebBrowser from "expo-web-browser";
 import React from "react";
 import axios from "axios";
 import {
 	Image,
-	Platform,
-	ScrollView,
 	StyleSheet,
 	Text,
 	TouchableOpacity,
@@ -12,7 +9,7 @@ import {
 	AsyncStorage,
 	ActivityIndicator
 } from "react-native";
-
+import { Asset } from "expo-asset";
 import { FlatList } from "react-native-gesture-handler";
 
 export default class LogScreen extends React.Component {
@@ -53,6 +50,19 @@ export default class LogScreen extends React.Component {
 		this.setState({ logs: response.data.logs, totalSaved: total });
 	};
 
+	clearLogs = async () => {
+		let response = await axios({
+			method: "get",
+			url: this.state.api + "/logs/clear",
+			headers: {
+				Authorization: "Bearer " + this.state.token
+			}
+		});
+		if (response.data.logsCleared) {
+			this.getLogs();
+		}
+	};
+
 	render() {
 		return (
 			<View style={styles.container}>
@@ -71,53 +81,72 @@ export default class LogScreen extends React.Component {
 						<View
 							style={{
 								flexDirection: "row",
-								justifyContent: "flex-end",
+								justifyContent: "flex-start",
 								marginVertical: 20,
 								marginRight: 10
 							}}
 						>
-							<Text style={styles.text}>
-								Total Amount Saved:{" "}
-								<Text style={{ fontWeight: "800" }}>
-									{this.state.totalSaved}$
-								</Text>
-							</Text>
+							<TouchableOpacity
+								style={{
+									borderColor: "white",
+									borderRadius: 5,
+									borderWidth: StyleSheet.hairlineWidth,
+									padding: 5,
+									marginLeft: 10
+								}}
+								onPress={this.clearLogs}
+							>
+								<Text style={styles.text}>Clear Logs</Text>
+							</TouchableOpacity>
 						</View>
-						<FlatList
-							style={{ flex: 1 }}
-							data={this.state.logs}
-							ItemSeparatorComponent={() => (
-								<View
-									style={{
-										height: StyleSheet.hairlineWidth,
-										backgroundColor: "white"
-									}}
-								/>
-							)}
-							renderItem={({ item }) => (
-								<View
-									style={{
-										flexDirection: "row",
-										alignItems: "center",
-										paddingLeft: 5,
-										paddingVertical: 10,
-										justifyContent: "space-between"
-									}}
-								>
-									<View style={{ flexDirection: "row", alignItems: "center" }}>
-										<Image
-											style={{ width: 50, height: 50, marginRight: 10 }}
-											source={require("../assets/images/happy.png")}
-										></Image>
-										<Text style={styles.text}>You Saved {item.value}$</Text>
-									</View>
-									<View style={{ marginRight: 10 }}>
-										<Text style={styles.date}>Date: {item.timestamp}</Text>
-									</View>
-								</View>
-							)}
-							keyExtractor={item => String(item.log_id)}
-						/>
+						{this.state.logs.length < 1 ? (
+							<View style={{ alignItems: "center" }}>
+								<Text style={styles.text}>Nothing to show</Text>
+							</View>
+						) : (
+							<FlatList
+								style={{ flex: 1 }}
+								data={this.state.logs}
+								ItemSeparatorComponent={() => (
+									<View
+										style={{
+											height: StyleSheet.hairlineWidth,
+											backgroundColor: "white"
+										}}
+									/>
+								)}
+								renderItem={({ item }) => {
+									let time = item.timestamp.split("T")[1];
+									time = time.split(":");
+									time = time[0] + ":" + time[1];
+									return (
+										<View
+											style={{
+												flexDirection: "row",
+												alignItems: "center",
+												paddingVertical: 10,
+												marginLeft: 10
+											}}
+										>
+											<Image
+												style={{ width: 35, height: 35, marginRight: 15 }}
+												source={Asset.fromModule(
+													require("../assets/images/happy.png")
+												)}
+											></Image>
+											<Text style={styles.text}>
+												You visited us on{" "}
+												<Text style={styles.italic}>
+													{item.timestamp.split("T")[0]}
+												</Text>{" "}
+												at <Text style={styles.italic}>{time}</Text>
+											</Text>
+										</View>
+									);
+								}}
+								keyExtractor={item => String(item.log_id)}
+							/>
+						)}
 					</View>
 				)}
 			</View>
@@ -134,8 +163,8 @@ const styles = StyleSheet.create({
 		color: "#fff",
 		fontSize: 14
 	},
-	date: {
-		color: "#fff",
-		fontSize: 10
+	italic: {
+		color: "#61DEFF",
+		fontStyle: "italic"
 	}
 });

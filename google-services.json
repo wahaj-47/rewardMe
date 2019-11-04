@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "731712916432",
+    "firebase_url": "https://mh-reward-me.firebaseio.com",
+    "project_id": "mh-reward-me",
+    "storage_bucket": "mh-reward-me.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:731712916432:android:76284f7bf85852614847d5",
+        "android_client_info": {
+          "package_name": "com.mercedeshairdressing.rewardme"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "731712916432-35rv5278t5gblkm9lo4nneu0qrcb3jsc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7wN4ehg2YIV-ymQm92iakkuYLl-hR-I0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "731712916432-35rv5278t5gblkm9lo4nneu0qrcb3jsc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
