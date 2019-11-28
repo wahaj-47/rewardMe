@@ -1,7 +1,13 @@
 import { AppLoading, Notifications } from "expo";
 import { Asset } from "expo-asset";
 import React, { useState, useEffect } from "react";
-import { Platform, StatusBar, StyleSheet, View } from "react-native";
+import {
+	Platform,
+	StatusBar,
+	StyleSheet,
+	View,
+	AsyncStorage
+} from "react-native";
 import Constants from "expo-constants";
 import * as Font from "expo-font";
 
@@ -14,11 +20,15 @@ export default function App(props) {
 	const [notification, setNotification] = useState({});
 
 	useEffect(() => {
-		_handleNotification = notification => {
-			Notifications.setBadgeNumberAsync(1);
-
+		_handleNotification = async notification => {
 			console.log(notification.data.msg);
 			setNotification(notification);
+
+			try {
+				await AsyncStorage.setItem("read", JSON.stringify(false));
+			} catch (error) {
+				console.log(error);
+			}
 		};
 
 		_notificationSubscription = Notifications.addListener(_handleNotification);
@@ -90,7 +100,7 @@ function handleLoadingError(error) {
 	console.warn(error);
 }
 
-function handleFinishLoading(setLoadingComplete) {
+async function handleFinishLoading(setLoadingComplete) {
 	setLoadingComplete(true);
 }
 

@@ -88,15 +88,6 @@ export default class ForgotPassScreen extends React.Component {
 						)}
 					</TouchableOpacity>
 				</View>
-
-				<TouchableOpacity
-					onPress={() => {
-						this.props.navigation.navigate("Login");
-						console.log("login button is pressed");
-					}}
-				>
-					<Text style={styles.text}>Click here to Log in</Text>
-				</TouchableOpacity>
 			</KeyboardAwareScrollView>
 		);
 	}

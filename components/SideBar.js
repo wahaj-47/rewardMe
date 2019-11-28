@@ -5,18 +5,27 @@ import {
 	View,
 	Image,
 	Text,
-	AsyncStorage
+	AsyncStorage,
+	AppState
 } from "react-native";
-import { Linking } from "expo";
+import { Linking, Notifications } from "expo";
 
 import SafeAreaView from "react-native-safe-area-view";
 import { TouchableHighlight } from "react-native-gesture-handler";
 import { Asset } from "expo-asset";
 
 class CustomDrawerContentComponent extends React.Component {
-	state = { name: "" };
+	state = {
+		appState: AppState.currentState,
+		name: "",
+		notificationCount: 0
+	};
 
 	async componentDidMount() {
+		AppState.addEventListener("change", this._handleAppStateChange);
+		// this.setState({
+		// 	notificationCount: await Notifications.getBadgeNumberAsync()
+		// });
 		try {
 			const value = await AsyncStorage.getItem("name");
 			if (value !== null) {
@@ -24,11 +33,30 @@ class CustomDrawerContentComponent extends React.Component {
 			} else {
 				return 0;
 			}
+			const phoneNumber = await AsyncStorage.getItem("phoneNumber");
+			if (phoneNumber !== null) {
+				this.setState({ phoneNumber: phoneNumber });
+			} else {
+				return 0;
+			}
+			const email = await AsyncStorage.getItem("email");
+			if (email !== null) {
+				this.setState({ email: email });
+			} else {
+				return 0;
+			}
 		} catch (error) {
 			console.log(error);
 		}
-		console.log(this.state.name);
 	}
+
+	_handleAppStateChange = async nextAppState => {
+		if (nextAppState === "active") {
+			this.setState({
+				notificationCount: await Notifications.getBadgeNumberAsync()
+			});
+		}
+	};
 
 	render() {
 		return (
@@ -116,7 +144,13 @@ class CustomDrawerContentComponent extends React.Component {
 								this.setState({ book: false });
 							}}
 							onPress={() => {
-								Linking.openURL("http://mercedeshairdressing.com.au");
+								Linking.openURL(
+									`https://mercedeshairdressing.com.au/app/frontend/web/index.php?firstname=${
+										this.state.name.split(" ")[0]
+									}&lastname=${this.state.name.split(" ")[1]}&email=${
+										this.state.email
+									}&phone=${this.state.phoneNumber}`
+								);
 							}}
 							style={{ alignItems: "center", justifyContent: "center" }}
 						>
@@ -164,6 +198,7 @@ class CustomDrawerContentComponent extends React.Component {
 								this.setState({ notice: false });
 							}}
 							onPress={() => {
+								this.setState({ notificationCount: 0 });
 								this.props.navigation.navigate("Notice");
 							}}
 							style={{ alignItems: "center", justifyContent: "center" }}
@@ -172,7 +207,7 @@ class CustomDrawerContentComponent extends React.Component {
 								style={{
 									paddingTop: 15,
 									paddingBottom: 15,
-
+									flexDirection: "row",
 									alignItems: "center",
 									justifyContent: "center"
 								}}
@@ -192,6 +227,17 @@ class CustomDrawerContentComponent extends React.Component {
 								>
 									Notice
 								</Text>
+								{this.state.notificationCount > 0 && (
+									<View
+										style={{
+											borderRadius: 100,
+											backgroundColor: "#61DEFF",
+											width: 10,
+											height: 10,
+											marginLeft: 5
+										}}
+									></View>
+								)}
 							</View>
 						</TouchableHighlight>
 					</View>

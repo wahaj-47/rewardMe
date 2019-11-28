@@ -6,7 +6,8 @@ import {
 	Text,
 	TouchableOpacity,
 	View,
-	AsyncStorage
+	AsyncStorage,
+	Platform
 } from "react-native";
 
 import { FlatList } from "react-native-gesture-handler";
@@ -21,9 +22,14 @@ export default class NoticeScreen extends React.Component {
 
 	componentDidMount() {
 		this.props.navigation.addListener("didFocus", async () => {
-			Notifications.dismissAllNotificationsAsync();
-			Notifications.setBadgeNumberAsync(0);
-			if (await this.retrieveData()) this.getNotices();
+			if (Platform.OS === "android") {
+				Notifications.dismissAllNotificationsAsync();
+			} else {
+				Notifications.setBadgeNumberAsync(0);
+			}
+			if (await this.retrieveData()) {
+				this.getNotices();
+			}
 		});
 	}
 
@@ -43,9 +49,15 @@ export default class NoticeScreen extends React.Component {
 
 	retrieveData = async () => {
 		try {
-			const value = await AsyncStorage.getItem("token");
-			if (value !== null) {
-				this.setState({ token: value });
+			const token = await AsyncStorage.getItem("token");
+			const read = await AsyncStorage.getItem("read");
+			console.log(token, read);
+			if (token !== null) {
+				this.setState({ token: token });
+				if (read !== null) {
+					this.setState({ read: JSON.parse(read) });
+					console.log(typeof this.state.read);
+				}
 				return 1;
 			} else {
 				return 0;
@@ -113,28 +125,84 @@ export default class NoticeScreen extends React.Component {
 								}}
 							/>
 						)}
-						renderItem={({ item }) => {
+						renderItem={({ item, index }) => {
+							let date = item.publishedDate.split("T")[0];
+							let time = item.publishedDate.split("T")[1];
+							time = time.split(":");
+							time = time[0] + ":" + time[1];
 							return (
 								<TouchableOpacity
-									onPress={() => {
+									onPress={async () => {
 										this.setState({
 											noticeVisible: true,
-											notice: item
+											notice: item,
+											read: true
 										});
+										try {
+											await AsyncStorage.setItem("read", JSON.stringify(true));
+										} catch (error) {
+											console.log(error);
+										}
 									}}
 								>
 									<View
-										style={{
-											flexDirection: "row",
-											alignItems: "center",
-											paddingLeft: 5,
-											paddingVertical: 10
-										}}
+										style={[
+											{
+												flexDirection: "row",
+												alignItems: "center",
+												paddingLeft: 5,
+												paddingVertical: 10
+											},
+											!this.state.read &&
+												index === 0 && {
+													backgroundColor: "#61DEFF"
+												}
+										]}
 									>
 										<Image
+											style={
+												!this.state.read &&
+												index === 0 && { tintColor: "#1f1f1f" }
+											}
 											source={require("../assets/images/notice.png")}
 										></Image>
-										<Text style={styles.text}>{item.title}</Text>
+										<View style={{ flex: 1 }}>
+											<Text
+												style={[
+													styles.text,
+													{ fontWeight: "bold" },
+													!this.state.read && index === 0 && styles.new
+												]}
+											>
+												{item.title}
+											</Text>
+											<View
+												style={{
+													flexDirection: "row",
+													alignItems: "space-between",
+													justifyContent: "space-between",
+													alignContent: "space-between"
+												}}
+											>
+												<Text
+													style={[
+														styles.text,
+														!this.state.read && index === 0 && styles.new
+													]}
+												>
+													{item.subtitle}
+												</Text>
+												<Text
+													style={[
+														styles.text,
+														{ marginRight: 15 },
+														!this.state.read && index === 0 && styles.new
+													]}
+												>
+													{time + " " + date}
+												</Text>
+											</View>
+										</View>
 									</View>
 								</TouchableOpacity>
 							);
@@ -161,6 +229,9 @@ const styles = StyleSheet.create({
 	text: {
 		color: "#fff",
 		marginLeft: 10
+	},
+	new: {
+		color: "#1f1f1f"
 	},
 	noticeTitle: {
 		textTransform: "uppercase",

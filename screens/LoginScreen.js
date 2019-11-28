@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import axios from "axios";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { TouchableHighlight } from "react-native-gesture-handler";
 
 export default class LoginScreen extends React.Component {
 	state = {
@@ -65,6 +66,8 @@ export default class LoginScreen extends React.Component {
 			try {
 				await AsyncStorage.setItem("token", response.data.token);
 				await AsyncStorage.setItem("name", response.data.name);
+				await AsyncStorage.setItem("phoneNumber", response.data.phoneNumber);
+				await AsyncStorage.setItem("email", this.state.email);
 			} catch (error) {
 				console.log(error);
 			}
@@ -153,23 +156,45 @@ export default class LoginScreen extends React.Component {
 					</TouchableOpacity>
 				</View>
 
-				<TouchableOpacity
+				<TouchableHighlight
+					underlayColor="transparent"
+					onShowUnderlay={() => {
+						this.setState({ signUp: true });
+					}}
+					onHideUnderlay={() => {
+						this.setState({ signUp: false });
+					}}
 					onPress={() => {
 						this.props.navigation.navigate("Signup");
 						console.log("signup button is pressed");
 					}}
 				>
-					<Text style={styles.text}>Click here to Sign Up</Text>
-				</TouchableOpacity>
+					<Text
+						style={[styles.text, this.state.signUp && { color: "#61DEFF" }]}
+					>
+						Click here to Sign Up
+					</Text>
+				</TouchableHighlight>
 
-				<TouchableOpacity
+				<TouchableHighlight
+					underlayColor="transparent"
+					onShowUnderlay={() => {
+						this.setState({ forgotPass: true });
+					}}
+					onHideUnderlay={() => {
+						this.setState({ forgotPass: false });
+					}}
 					onPress={() => {
 						this.props.navigation.navigate("ForgotPassword");
 					}}
 					style={{ marginTop: 10 }}
 				>
-					<Text style={styles.text}>Forgot Password?</Text>
-				</TouchableOpacity>
+					<Text
+						style={[styles.text, this.state.forgotPass && { color: "#61DEFF" }]}
+					>
+						Forgot Password?
+					</Text>
+				</TouchableHighlight>
 
 				{/* <TouchableOpacity
 					onPress={() => {

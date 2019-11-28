@@ -1,7 +1,14 @@
 import React from "react";
-import { Image, TouchableOpacity, StyleSheet } from "react-native";
+import {
+	Image,
+	TouchableOpacity,
+	StyleSheet,
+	View,
+	AppState
+} from "react-native";
 import { createDrawerNavigator, createStackNavigator } from "react-navigation";
 import { Asset } from "expo-asset";
+import { Notifications } from "expo";
 
 import HomeScreen from "../screens/HomeScreen";
 import AboutScreen from "../screens/AboutScreen";
@@ -11,6 +18,49 @@ import ContactScreen from "../screens/ContactScreen";
 import PrivacyPolicyScreen from "../screens/PrivacyPolicyScreen";
 import SettingScreen from "../screens/SettingScreen";
 import SideBar from "../components/SideBar";
+
+class Burger extends React.Component {
+	state = {
+		appState: AppState.currentState,
+		notificationCount: 0
+	};
+
+	componentDidMount() {
+		AppState.addEventListener("change", this._handleAppStateChange);
+	}
+
+	_handleAppStateChange = async nextAppState => {
+		if (nextAppState === "active") {
+			this.setState({
+				notificationCount: await Notifications.getBadgeNumberAsync()
+			});
+		}
+	};
+
+	render() {
+		return (
+			<TouchableOpacity onPress={() => this.props.navigation.openDrawer()}>
+				<Image
+					source={Asset.fromModule(require("../assets/images/menu.png"))}
+					style={{ tintColor: "#61DEFF", marginLeft: 10 }}
+				></Image>
+				{this.state.notificationCount > 0 && (
+					<View
+						style={{
+							position: "absolute",
+							borderRadius: 100,
+							backgroundColor: "#61DEFF",
+							width: 10,
+							height: 10,
+							zIndex: 1,
+							left: 34
+						}}
+					></View>
+				)}
+			</TouchableOpacity>
+		);
+	}
+}
 
 const AboutStack = createStackNavigator({
 	About: {
@@ -86,14 +136,7 @@ const ContainerStackNavigator = createStackNavigator(
 				backgroundColor: "#1f1f1f",
 				borderBottomColor: "#fff"
 			},
-			headerLeft: (
-				<TouchableOpacity onPress={() => navigation.openDrawer()}>
-					<Image
-						source={Asset.fromModule(require("../assets/images/menu.png"))}
-						style={{ tintColor: "#61DEFF", marginLeft: 10 }}
-					></Image>
-				</TouchableOpacity>
-			)
+			headerLeft: () => <Burger navigation={navigation}></Burger>
 		})
 	}
 );

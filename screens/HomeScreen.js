@@ -14,7 +14,8 @@ import {
 	Vibration,
 	Animated,
 	Easing,
-	BackHandler
+	BackHandler,
+	AppState
 } from "react-native";
 import { TouchableHighlight } from "react-native-gesture-handler";
 import { Asset } from "expo-asset";
@@ -125,7 +126,8 @@ class HomeScreen extends React.Component {
 		revealSlot: false,
 		api: this.props.screenProps.api,
 		notification: this.props.screenProps.notification,
-		appVersion: this.props.screenProps.appVersion
+		appVersion: this.props.screenProps.appVersion,
+		appState: AppState.currentState
 	};
 
 	async componentDidMount() {
@@ -139,6 +141,7 @@ class HomeScreen extends React.Component {
 				return true;
 			}
 		});
+		AppState.addEventListener("change", this._handleAppStateChange);
 		this.props.navigation.addListener("didFocus", async () => {
 			this.setState({
 				scanned: true,
@@ -146,6 +149,7 @@ class HomeScreen extends React.Component {
 				hasCameraPermission: null
 			});
 			this.getRevealedSlots();
+			this.registerForPushNotificationsAsync();
 		});
 		if (await this.retrieveData()) {
 			this.getRevealedSlots();
@@ -163,6 +167,12 @@ class HomeScreen extends React.Component {
 			});
 		}
 	}
+
+	_handleAppStateChange = async nextAppState => {
+		if (nextAppState === "active") {
+			this.getRevealedSlots();
+		}
+	};
 
 	async registerForPushNotificationsAsync() {
 		const { status: existingStatus } = await Permissions.getAsync(
@@ -699,7 +709,7 @@ class HomeScreen extends React.Component {
 						</Text>
 					</View>
 				</TouchableHighlight>
-				<View style={{ marginVertical: 10 }}>
+				<View style={{ marginVertical: 10, marginTop: 30 }}>
 					{typeof this.state.revealedSlots === "undefined" ? (
 						<ActivityIndicator size="large" color="#61DEFF" />
 					) : (

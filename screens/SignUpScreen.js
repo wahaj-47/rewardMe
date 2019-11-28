@@ -12,9 +12,11 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 
 export default class SignUpScreen extends React.Component {
 	state = {
-		name: "",
+		fname: "",
+		lname: "",
 		email: "",
 		password: "",
+		phoneNumber: "",
 		isFormValid: false,
 		isEmailValid: true,
 		isEmailIncorrect: false
@@ -24,30 +26,23 @@ export default class SignUpScreen extends React.Component {
 		this.setState({ api: this.props.screenProps.api });
 	}
 
-	handleNameChange = name => {
-		this.setState({ name: name });
-		if (
-			this.state.name.length > 0 &&
-			this.state.email.length > 0 &&
-			this.state.password.length > 6
-		) {
-			this.setState({ isFormValid: true });
-		} else {
-			this.setState({ isFormValid: false });
-		}
+	handleFirstNameChange = fname => {
+		console.log(fname);
+		this.setState({ fname: fname });
+	};
+
+	handleLastNameChange = lname => {
+		console.log(lname);
+		this.setState({ lname: lname });
 	};
 
 	handleEmailChange = email => {
 		this.setState({ email: email });
-		if (
-			this.state.name.length > 0 &&
-			this.state.email.length > 0 &&
-			this.state.password.length > 6
-		) {
-			this.setState({ isFormValid: true });
-		} else {
-			this.setState({ isFormValid: false });
-		}
+	};
+
+	handlePhoneNumberChange = phoneNumber => {
+		console.log(phoneNumber);
+		this.setState({ phoneNumber: phoneNumber });
 	};
 
 	handlePasswordChange = password => {
@@ -59,7 +54,10 @@ export default class SignUpScreen extends React.Component {
 		this.setState({ buttonPressed: true });
 
 		if (reg.test(this.state.email) === false) {
-			this.setState({ isEmailIncorrect: true, buttonPressed: false });
+			this.setState({
+				isEmailIncorrect: true,
+				buttonPressed: false
+			});
 		} else {
 			console.log("Signup button pressed");
 			let response = await axios.post(
@@ -71,9 +69,10 @@ export default class SignUpScreen extends React.Component {
 
 			if (response.data.isEmailValid) {
 				let res = await axios.post(this.state.api + "/signUp", {
-					name: this.state.name,
+					name: this.state.fname + " " + this.state.lname,
 					email: this.state.email,
-					password: this.state.password
+					password: this.state.password,
+					phoneNumber: this.state.phoneNumber
 				});
 				console.log(res.data);
 				if (res.data.success) {
@@ -95,100 +94,140 @@ export default class SignUpScreen extends React.Component {
 
 	render() {
 		return (
-			<KeyboardAwareScrollView
-				contentContainerStyle={styles.container}
-				scrollEnabled={false}
-				enableOnAndroid
-			>
-				<View style={styles.form}>
-					<View style={styles.headingContainer}>
-						<Text style={styles.mainHeading}>Sign Up</Text>
-						<Text style={styles.subHeading}>Sign Up to join</Text>
-					</View>
-
-					<View style={styles.subContainer}>
-						<Text style={styles.headings}>Name</Text>
-						<TextInput
-							textContentType="name"
-							autoCapitalize="words"
-							style={styles.textBox}
-							value={this.state.name}
-							onChangeText={this.handleNameChange}
-							placeholder="Enter your name here"
-						/>
-					</View>
-
-					<View style={styles.subContainer}>
-						<Text style={styles.headings}>Email</Text>
-						<TextInput
-							textContentType="emailAddress"
-							autoCapitalize="none"
-							keyboardType="email-address"
-							autoCompleteType="email"
-							style={styles.textBox}
-							value={this.state.email}
-							onChangeText={this.handleEmailChange}
-							placeholder="Enter your email here"
-						/>
-					</View>
-					<View style={styles.subContainer}>
-						<Text style={styles.headings}>Password</Text>
-						<TextInput
-							textContentType="password"
-							autoCompleteType="password"
-							autoCapitalize="none"
-							style={styles.textBox}
-							value={this.state.password}
-							onChangeText={this.handlePasswordChange}
-							placeholder="Enter your password here"
-							secureTextEntry
-						/>
-					</View>
-
-					<Text style={[styles.text, { fontSize: 10, alignSelf: "center" }]}>
-						Password must be at least 8 characters long
-					</Text>
-
-					{!this.state.isEmailValid && (
-						<Text style={{ color: "red", fontSize: 10, alignSelf: "center" }}>
-							Email already in use
-						</Text>
-					)}
-
-					{this.state.isEmailIncorrect && (
-						<Text style={{ color: "red", fontSize: 10, alignSelf: "center" }}>
-							Invalid Email
-						</Text>
-					)}
-
-					<TouchableOpacity
-						disabled={
-							!(
-								this.state.name.length > 0 &&
-								this.state.email.length > 0 &&
-								this.state.password.length > 7
-							)
-						}
-						style={styles.signUpButton}
-						onPress={this.handleSignUpPress}
-					>
-						{this.state.buttonPressed ? (
-							<ActivityIndicator></ActivityIndicator>
-						) : (
-							<Text style={styles.signUpText}>SIGN UP</Text>
-						)}
-					</TouchableOpacity>
-				</View>
-
-				<TouchableOpacity
-					onPress={() => {
-						this.props.navigation.navigate("Login");
-						console.log("signup button is pressed");
-					}}
+			<View style={{ flex: 1, backgroundColor: "#000" }}>
+				<KeyboardAwareScrollView
+					contentContainerStyle={styles.container}
+					scrollEnabled={true}
+					enableOnAndroid={true}
+					enableAutomaticScroll={true}
+					extraScrollHeight={30}
 				>
-					<Text style={styles.text}>Click here to Log in</Text>
-				</TouchableOpacity>
-			</KeyboardAwareScrollView>
+					<View style={styles.form}>
+						<View style={styles.headingContainer}>
+							<Text style={styles.mainHeading}>Sign Up</Text>
+							<Text style={styles.subHeading}>Sign Up to join</Text>
+						</View>
+
+						<View
+							style={{
+								flexDirection: "row",
+								justifyContent: "space-between"
+							}}
+						>
+							<View style={[styles.subContainer, { width: 125 }]}>
+								<Text style={styles.headings}>First Name</Text>
+								<TextInput
+									textContentType="name"
+									autoCapitalize="words"
+									style={styles.textBox}
+									value={this.state.fname}
+									onChangeText={this.handleFirstNameChange}
+									placeholder="Enter your first name here"
+								/>
+							</View>
+							<View style={[styles.subContainer, { width: 125 }]}>
+								<Text style={styles.headings}>Last Name</Text>
+								<TextInput
+									textContentType="name"
+									autoCapitalize="words"
+									style={styles.textBox}
+									value={this.state.lname}
+									onChangeText={this.handleLastNameChange}
+									placeholder="Enter your last name here"
+								/>
+							</View>
+						</View>
+						<View style={styles.subContainer}>
+							<Text style={styles.headings}>Phone Number</Text>
+							<TextInput
+								keyboardType="phone-pad"
+								textContentType="telephoneNumber"
+								autoCompleteType="tel"
+								autoCapitalize="none"
+								style={styles.textBox}
+								value={this.state.phoneNumber}
+								onChangeText={this.handlePhoneNumberChange}
+								placeholder="Enter your phone number here"
+							/>
+						</View>
+
+						<View style={styles.subContainer}>
+							<Text style={styles.headings}>Email</Text>
+							<TextInput
+								textContentType="emailAddress"
+								autoCapitalize="none"
+								keyboardType="email-address"
+								autoCompleteType="email"
+								style={styles.textBox}
+								value={this.state.email}
+								onChangeText={this.handleEmailChange}
+								placeholder="Enter your email here"
+							/>
+						</View>
+						<View style={styles.subContainer}>
+							<Text style={styles.headings}>Password</Text>
+							<TextInput
+								textContentType="password"
+								autoCompleteType="password"
+								autoCapitalize="none"
+								style={styles.textBox}
+								value={this.state.password}
+								onChangeText={this.handlePasswordChange}
+								placeholder="Enter your password here"
+								secureTextEntry
+							/>
+						</View>
+
+						<Text style={[styles.text, { fontSize: 10, alignSelf: "center" }]}>
+							Password must be at least 8 characters long
+						</Text>
+
+						{!this.state.isEmailValid && (
+							<Text
+								style={{
+									color: "red",
+									fontSize: 10,
+									alignSelf: "center"
+								}}
+							>
+								Email already in use
+							</Text>
+						)}
+
+						{this.state.isEmailIncorrect && (
+							<Text
+								style={{
+									color: "red",
+									fontSize: 10,
+									alignSelf: "center"
+								}}
+							>
+								Invalid Email
+							</Text>
+						)}
+
+						<TouchableOpacity
+							disabled={
+								!(
+									this.state.fname.length > 0 &&
+									this.state.lname.length > 0 &&
+									this.state.email.length > 0 &&
+									this.state.password.length > 7 &&
+									this.state.phoneNumber.length > 0
+								)
+							}
+							style={styles.signUpButton}
+							onPress={this.handleSignUpPress}
+						>
+							{this.state.buttonPressed ? (
+								<ActivityIndicator></ActivityIndicator>
+							) : (
+								<Text style={styles.signUpText}>SIGN UP</Text>
+							)}
+						</TouchableOpacity>
+					</View>
+				</KeyboardAwareScrollView>
+			</View>
 		);
 	}
 }
@@ -197,7 +236,7 @@ const styles = StyleSheet.create({
 	container: {
 		justifyContent: "center",
 		alignItems: "center",
-		flex: 1,
+		flexGrow: 1,
 		backgroundColor: "#000"
 	},
 	text: {
@@ -210,7 +249,8 @@ const styles = StyleSheet.create({
 	form: {
 		marginTop: 30,
 		justifyContent: "center",
-		width: "80%"
+		width: "80%",
+		paddingBottom: 60
 	},
 	signUpButton: {
 		backgroundColor: "#1f1f1f",
