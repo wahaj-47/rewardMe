@@ -1,18 +1,10 @@
 import React from "react";
-import {
-	Image,
-	Platform,
-	ScrollView,
-	StyleSheet,
-	Text,
-	TouchableOpacity,
-	View
-} from "react-native";
 import { WebView } from "react-native-webview";
 
 export default function PrivacyPolicyScreen() {
 	return (
 		<WebView
+			useWebKit={true}
 			style={{ flex: 1, color: "white", backgroundColor: "black" }}
 			source={{
 				html: `<style>
@@ -475,10 +467,3 @@ export default function PrivacyPolicyScreen() {
 		/>
 	);
 }
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		backgroundColor: "#000"
-	}
-});
