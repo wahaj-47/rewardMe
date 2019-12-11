@@ -22,13 +22,13 @@ export default class NoticeScreen extends React.Component {
 
 	componentDidMount() {
 		this.props.navigation.addListener("didFocus", async () => {
+			if (await this.retrieveData()) {
+				this.getNotices();
+			}
 			if (Platform.OS === "android") {
 				Notifications.dismissAllNotificationsAsync();
 			} else {
 				Notifications.setBadgeNumberAsync(0);
-			}
-			if (await this.retrieveData()) {
-				this.getNotices();
 			}
 		});
 	}
@@ -51,9 +51,11 @@ export default class NoticeScreen extends React.Component {
 		try {
 			const token = await AsyncStorage.getItem("token");
 			const read = await AsyncStorage.getItem("read");
+			const notificationCount = await Notifications.getBadgeNumberAsync();
+			console.log(await Notifications.getBadgeNumberAsync());
 			console.log(token, read);
 			if (token !== null) {
-				this.setState({ token: token });
+				this.setState({ token: token, notificationCount });
 				if (read !== null) {
 					this.setState({ read: JSON.parse(read) });
 					console.log(typeof this.state.read);
@@ -136,7 +138,8 @@ export default class NoticeScreen extends React.Component {
 										this.setState({
 											noticeVisible: true,
 											notice: item,
-											read: true
+											read: true,
+											notificationCount: 0
 										});
 										try {
 											await AsyncStorage.setItem("read", JSON.stringify(true));
@@ -153,7 +156,7 @@ export default class NoticeScreen extends React.Component {
 												paddingLeft: 5,
 												paddingVertical: 10
 											},
-											!this.state.read &&
+											(!this.state.read || this.state.notificationCount) &&
 												index === 0 && {
 													backgroundColor: "#61DEFF"
 												}
@@ -161,7 +164,7 @@ export default class NoticeScreen extends React.Component {
 									>
 										<Image
 											style={
-												!this.state.read &&
+												(!this.state.read || this.state.notificationCount) &&
 												index === 0 && { tintColor: "#1f1f1f" }
 											}
 											source={require("../assets/images/notice.png")}

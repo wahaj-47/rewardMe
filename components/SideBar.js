@@ -145,11 +145,12 @@ class CustomDrawerContentComponent extends React.Component {
 							}}
 							onPress={() => {
 								Linking.openURL(
-									`https://mercedeshairdressing.com.au/app/frontend/web/index.php?firstname=${
-										this.state.name.split(" ")[0]
-									}&lastname=${this.state.name.split(" ")[1]}&email=${
-										this.state.email
-									}&phone=${this.state.phoneNumber}`
+									`https://mercedeshairdressing.com.au/app/frontend/web/index.php?firstname=${this.state.name.split(
+										" "
+									)[0] || "First Name"}&lastname=${this.state.name.split(
+										" "
+									)[1] || "Last Name"}&email=${this.state.email ||
+										"email@email.com"}&phone=${this.state.phoneNumber || "0"}`
 								);
 							}}
 							style={{ alignItems: "center", justifyContent: "center" }}
